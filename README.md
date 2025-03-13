@@ -1,53 +1,76 @@
-# Front-end
+# Back-end
 
-![GitHub repo size](https://img.shields.io/github/repo-size/Crazy-Frogs/Front-end?style=for-the-badge)
-![GitHub language count](https://img.shields.io/github/languages/count/Crazy-Frogs/Front-end?style=for-the-badge)
-![GitHub forks](https://img.shields.io/github/forks/Crazy-Frogs/Front-end?style=for-the-badge)
-![Bitbucket open issues](https://img.shields.io/bitbucket/issues/Crazy-Frogs/Front-end?style=for-the-badge)
-![Bitbucket open pull requests](https://img.shields.io/bitbucket/pr-raw/Crazy-Frogs/Front-end?style=for-the-badge)
+![GitHub repo size](https://img.shields.io/github/repo-size/Crazy-Frogs/Back-end?style=for-the-badge)
+![GitHub language count](https://img.shields.io/github/languages/count/Crazy-Frogs/Back-end?style=for-the-badge)
+![GitHub forks](https://img.shields.io/github/forks/Crazy-Frogs/Back-end?style=for-the-badge)
+![Bitbucket open issues](https://img.shields.io/bitbucket/issues/Crazy-Frogs/Back-end?style=for-the-badge)
+![Bitbucket open pull requests](https://img.shields.io/bitbucket/pr-raw/Crazy-Frogs/Back-end?style=for-the-badge)
 
-> Repositório destinado ao desenvolvimento e aprimoramento de projetos front-end. Aqui você encontrará exercícios práticos e projetos voltados para a criação de interfaces web.
+> Repositório destinado ao desenvolvimento e aprimoramento do back-end do projeto. Aqui você encontrará a estrutura do servidor, banco de dados e API para comunicação com o front-end.
 
 ## 💻 Pré-requisitos
 
 Antes de começar, verifique se você atendeu aos seguintes requisitos:
 
-- Você possui as extensões de HTML, CSS e JavaScript instaladas.
-- Você tem uma máquina que suporta VSCode (Windows, Linux ou macOS).
-- É recomendado ter um conhecimento básico de HTML, CSS e JavaScript.
+- Você tem o **Java 21** instalado em sua máquina.
+- Você possui o **Spring Boot** configurado.
+- O banco de dados **MySQL** está instalado e em execução.
+- Você tem um ambiente de desenvolvimento como **IntelliJ IDEA** ou **VSCode** configurado.
 
-## 🚀 Instalando o Front-end
+## 🚀 Instalando o Back-end
 
-Para instalar o **Front-end**, siga estas etapas:
+Para instalar o **Back-end**, siga estas etapas:
 
 ### Linux e macOS:
 
 1. Clone o repositório:
     ```bash
-    git clone https://github.com/Crazy-Frogs/Front-end.git
+    git clone https://github.com/Crazy-Frogs/Back-end.git
+    ```
+
+2. Navegue até o diretório do projeto:
+    ```bash
+    cd Back-end
+    ```
+
+3. Configure as variáveis de ambiente no arquivo `.env` ou `application.properties`.
+
+4. Execute o projeto com:
+    ```bash
+    ./mvnw spring-boot:run
     ```
 
 ### Windows:
 
 1. Clone o repositório:
     ```bash
-    git clone https://github.com/Crazy-Frogs/Front-end.git
+    git clone https://github.com/Crazy-Frogs/Back-end.git
     ```
 
 2. Navegue até o diretório do projeto:
     ```bash
-    cd Front-end
+    cd Back-end
     ```
 
-3. Abra o projeto no VSCode ou no editor de sua preferência.
+3. Configure as variáveis de ambiente no arquivo `.env` ou `application.properties`.
 
-## ☕ Usando o Front-end
+4. Execute o projeto com:
+    ```bash
+    mvnw.cmd spring-boot:run
+    ```
 
-Para usar **Front-end**, basta abrir os arquivos HTML no navegador ou configurar um ambiente local com um servidor como o Live Server no VSCode.
+## ☕ Usando o Back-end
 
-## 📫 Contribuindo para o Front-end
+Para utilizar o **Back-end**, siga estas etapas:
 
-Para contribuir com **Front-end**, siga estas etapas:
+1. Certifique-se de que o banco de dados **MySQL** está rodando.
+2. Inicie o servidor como mencionado na seção de instalação.
+3. A API estará disponível em `http://localhost:8080`.
+4. Utilize ferramentas como **Postman** ou **Insomnia** para testar as requisições.
+
+## 📫 Contribuindo para o Back-end
+
+Para contribuir com **Back-end**, siga estas etapas:
 
 1. Bifurque este repositório.
 2. Crie um branch: `git checkout -b <nome_branch>`.
@@ -77,3 +100,4 @@ Agradecemos às seguintes pessoas que contribuíram para este projeto:
 ## 📝 Licença
 
 Esse projeto está sob licença. Veja o arquivo [LICENÇA](LICENSE.md) para mais detalhes.
+
