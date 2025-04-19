@@ -1,9 +1,8 @@
 package sesi.petvita.user.model;
 
-import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.*;
 import lombok.*;
-
 import java.util.UUID;
 
 @Getter
@@ -16,25 +15,34 @@ import java.util.UUID;
 public class UserModel {
 
     @Id
-    @GeneratedValue
-    private UUID id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-    @Column(nullable = false)
+    @NotBlank
+    @Size(min = 3, max = 50)
     private String username;
 
-    @Column(nullable = false)
+    @NotBlank
+    @Size(min = 8) // Exemplo de requisito mínimo para senha (a ser hasheada!)
     private String password;
 
-    @Column(unique = true, nullable = false)
+    @Email
+    @NotBlank
+    @Size(max = 100)
+    @Column(unique = true)
     private String email;
 
-    @Column(unique = true, nullable = false)
+    @NotBlank
+    @Pattern(regexp = "^\\d{2}\\d{8,9}$", message = "Formato de telefone inválido (ex: 11987654321)")
+    @Column(unique = true)
     private String phone;
 
-    @Column(nullable = false)
+    @NotBlank
+    @Size(max = 200)
     private String address;
 
-    @Column(unique = true, nullable = false)
-    private int rg;
-
+    @NotBlank
+    @Pattern(regexp = "^\\d{7,9}X?$", message = "Formato de RG inválido")
+    @Column(unique = true)
+    private String rg;
 }

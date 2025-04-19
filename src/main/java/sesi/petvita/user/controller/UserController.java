@@ -1,5 +1,7 @@
 package sesi.petvita.user.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -7,49 +9,52 @@ import org.springframework.web.bind.annotation.*;
 import sesi.petvita.user.model.UserModel;
 import sesi.petvita.user.repository.UserRepository;
 
+import jakarta.validation.Valid;
 import java.util.List;
-import java.util.Objects;
-import java.util.UUID;
 
 @RestController
-@RequestMapping("/usercontroller")
+@RequestMapping("/users")
+@Tag(name = "Usuários", description = "Endpoints relacionados ao cadastro de usuários")
 public class UserController {
 
     @Autowired
     UserRepository userRepository;
 
+    @Operation(summary = "Buscar todos os usuários")
     @GetMapping
     public ResponseEntity<List<UserModel>> getAllUsers() {
-        List<UserModel> users = userRepository.findAll();
-        return new ResponseEntity<>(users, HttpStatus.OK);
+        return ResponseEntity.ok(userRepository.findAll());
     }
 
+    @Operation(summary = "Adicionar um novo usuário")
     @PostMapping
-    public ResponseEntity<UserModel> addUser(@RequestBody UserModel user) {
-        UserModel userModel = userRepository.save(user);
-        return ResponseEntity.status(HttpStatus.CREATED).body(userModel);
+    public ResponseEntity<UserModel> addUser(@RequestBody @Valid UserModel user) {
+        UserModel savedUser = userRepository.save(user);
+        return ResponseEntity.status(HttpStatus.CREATED).body(savedUser);
     }
 
+    @Operation(summary = "Atualizar um usuário existente")
     @PutMapping("/{id}")
-    public ResponseEntity<UserModel> updateUser(@PathVariable UUID id, @RequestBody UserModel user) {
+    public ResponseEntity<UserModel> updateUser(@PathVariable Long id, @RequestBody @Valid UserModel user) {
         return userRepository.findById(id)
-                .map(userModel -> {
-                    userModel.setUsername(user.getUsername());
-                    userModel.setPassword(user.getPassword());
-                    userModel.setEmail(user.getEmail());
-                    userModel.setPhone(user.getPhone());
-                    userModel.setAddress(user.getAddress());
-                    userModel.setRg(user.getRg());
-                    return ResponseEntity.ok(userRepository.save(userModel));
+                .map(existing -> {
+                    existing.setUsername(user.getUsername());
+                    existing.setPassword(user.getPassword());
+                    existing.setEmail(user.getEmail());
+                    existing.setPhone(user.getPhone());
+                    existing.setAddress(user.getAddress());
+                    existing.setRg(user.getRg());
+                    return ResponseEntity.ok(userRepository.save(existing));
                 })
                 .orElse(ResponseEntity.notFound().build());
     }
 
+    @Operation(summary = "Excluir um usuário pelo ID")
     @DeleteMapping("/{id}")
-    public ResponseEntity<Object> deleteUser(@PathVariable UUID id) {
+    public ResponseEntity<Object> deleteUser(@PathVariable Long id) {
         return userRepository.findById(id)
-                .map(userModel -> {
-                    userRepository.delete(userModel);
+                .map(user -> {
+                    userRepository.delete(user);
                     return ResponseEntity.noContent().build();
                 })
                 .orElse(ResponseEntity.notFound().build());
