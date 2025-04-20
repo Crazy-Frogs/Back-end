@@ -136,17 +136,6 @@ Agradecemos às seguintes pessoas que contribuíram para este projeto:
         </sub>
       </a>
     </td>
-  </tr>
-  <tr>
-    <td align="center">
-      <a href="#" title="https://github.com/Crazy-Frogs">
-        <img src="https://i.pinimg.com/736x/6d/83/b9/6d83b96e6f062c57dcbeb3e325ebcd10.jpg" width="100px;" alt="Foto do Emanuel"/><br>
-        <sub>
-          <b>Emanuel</b>
-        </sub>
-      </a>
-    </td>
-  </tr>
 </table>
 
 > Projeto desenvolvido como parte do programa SENAI de formação técnica
