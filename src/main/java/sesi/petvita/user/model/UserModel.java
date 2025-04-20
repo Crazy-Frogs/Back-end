@@ -23,7 +23,8 @@ public class UserModel {
     private String username;
 
     @NotBlank
-    @Size(min = 8) // Exemplo de requisito mínimo para senha (a ser hasheada!)
+    @Size(min = 3 , max = 30)
+    @Pattern(regexp = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=!])(?=\\S+$).+$", message = "A senha deve conter pelo menos um número, uma letra maiúscula, uma letra minúscula e um caractere especial.")
     private String password;
 
     @Email
@@ -45,4 +46,6 @@ public class UserModel {
     @Pattern(regexp = "^\\d{7,9}X?$", message = "Formato de RG inválido")
     @Column(unique = true)
     private String rg;
+
+
 }
