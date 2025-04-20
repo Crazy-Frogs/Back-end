@@ -87,8 +87,60 @@ Agradecemos às seguintes pessoas que contribuíram para este projeto:
 <table>
   <tr>
     <td align="center">
+      <a href="https://github.com/iasmimi">
+        <img src="https://i.pinimg.com/736x/f6/a1/dc/f6a1dc8113d84a13b4d8fcbfbfb0524a.jpg" width="100px;" alt="Foto da Iasmin"/><br>
+        <sub>
+          <b>Iasmin</b>
+        </sub>
+      </a>
+    </td>
+    <td align="center">
+      <a href="https://github.com/irunael">
+        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ1oTGzsvfhLJpPa1P0tt-tq-I2Q4e-LFi3FA&s" width="100px;" alt="Foto do Irunael"/><br>
+        <sub>
+          <b>Irunael</b>
+        </sub>
+      </a>
+    </td>
+    <td align="center">
+      <a href="https://github.com/DevBernardo-Oliveira">
+        <img src="https://static1.cbrimages.com/wordpress/wp-content/uploads/2021/12/Griffith-stare.jpg" width="100px;" alt="Foto do Bernardo"/><br>
+        <sub>
+          <b>Bernardo</b>
+        </sub>
+      </a>
+    </td>
+  </tr>
+  <tr>
+    <td align="center">
+      <a href="https://github.com/fearaujo293">
+        <img src="https://p2.trrsf.com/image/fget/cf/774/0/images.terra.com/2023/07/03/1615375584-3c17fcbd6d8a82584770d97294261706.jpg" width="100px;" alt="Foto do Felipe"/><br>
+        <sub>
+          <b>Felipe</b>
+        </sub>
+      </a>
+    </td>
+    <td align="center">
+      <a href="https://github.com/JoaoNascimento1802">
+        <img src="https://p2.trrsf.com/image/fget/cf/1200/630/middle/images.terra.com/2021/06/16/gandalf-com-uma-arma.jpg" width="100px;" alt="Foto do João"/><br>
+        <sub>
+          <b>João</b>
+        </sub>
+      </a>
+    </td>
+    <td align="center">
+      <a href="https://github.com/ruanzinDoCorte">
+        <img src="https://i.pinimg.com/736x/6d/83/b9/6d83b96e6f062c57dcbeb3e325ebcd10.jpg" width="100px;" alt="Foto do Ruan"/><br>
+        <sub>
+          <b>Ruan</b>
+        </sub>
+      </a>
+    </td>
+  </tr>
+  <tr>
+    <td align="center">
       <a href="#" title="https://github.com/Crazy-Frogs">
-        <img src="https://i.pinimg.com/736x/6d/83/b9/6d83b96e6f062c57dcbeb3e325ebcd10.jpg" width="100px;" alt="Foto do Emanuel no GitHub"/><br>
+        <img src="https://i.pinimg.com/736x/6d/83/b9/6d83b96e6f062c57dcbeb3e325ebcd10.jpg" width="100px;" alt="Foto do Emanuel"/><br>
         <sub>
           <b>Emanuel</b>
         </sub>
@@ -97,7 +149,8 @@ Agradecemos às seguintes pessoas que contribuíram para este projeto:
   </tr>
 </table>
 
+> Projeto desenvolvido como parte do programa SENAI de formação técnica
+
 ## 📝 Licença
 
 Esse projeto está sob licença. Veja o arquivo [LICENÇA](LICENSE.md) para mais detalhes.
-
