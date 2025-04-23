@@ -1,4 +1,4 @@
-package sesi.petvita.veterinary.especiality;
+package sesi.petvita.veterinary.speciality;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
@@ -7,7 +7,7 @@ import lombok.RequiredArgsConstructor;
 @Getter
 @RequiredArgsConstructor
 @Schema(description = "Especialidades da medicina veterinária")
-public enum EspecialityEnum {
+public enum SpecialityEnum {
 
     @Schema(description = "Clínico Geral")
     CLINICO_GERAL("Clínico Geral"),

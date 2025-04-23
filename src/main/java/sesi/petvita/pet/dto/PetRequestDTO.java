@@ -18,6 +18,9 @@ public record PetRequestDTO(
         @Min(0)
         int age,
 
+        @NotNull
+        String imageurl,
+
         @Size(min = 3, max = 50)
         String personalizatedSpecies,
 

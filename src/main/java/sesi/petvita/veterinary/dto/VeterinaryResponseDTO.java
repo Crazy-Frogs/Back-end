@@ -24,7 +24,7 @@ public class VeterinaryResponseDTO {
                 .name(veterinaryModel.getName())
                 .email(veterinaryModel.getEmail())
                 .phone(veterinaryModel.getPhone())
-                .especialityenum(veterinaryModel.getEspecialityenum().getDescricao()) // obter a descrição do Enum
+                .especialityenum(veterinaryModel.getSpecialityenum().getDescricao()) // obter a descrição do Enum
                 .build();
     }
 }

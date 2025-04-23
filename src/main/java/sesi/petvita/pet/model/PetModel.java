@@ -25,6 +25,7 @@ public class PetModel {
 
     @NotBlank
     @Size(min = 3 , max = 50)
+    @Column(nullable = false)
     private String name;
 
     @Min(0)
@@ -39,6 +40,10 @@ public class PetModel {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private Species speciespet;
+
+    @NotBlank
+    @Column(nullable = false)
+    private String imageurl;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)

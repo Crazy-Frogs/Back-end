@@ -19,22 +19,30 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("/pets")
 @RequiredArgsConstructor
-@Tag(name = "Pet", description = "Gerenciamento de Pets")
+@Tag(name = "Pets", description = "Endpoints relacionados ao gerenciamento de pets")
 public class PetController {
 
     private final PetRepository petRepository;
     private final PetMapper petMapper;
 
-    @PostMapping
     @Operation(summary = "Cadastrar um novo pet")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Pet cadastrado com sucesso"),
+            @ApiResponse(responseCode = "400", description = "Dados inválidos")
+    })
+    @PostMapping
     public ResponseEntity<PetResponseDTO> create(@RequestBody PetRequestDTO dto) {
         PetModel pet = petMapper.toModel(dto);
         PetModel saved = petRepository.save(pet);
         return ResponseEntity.ok(petMapper.toDTO(saved));
     }
 
-    @GetMapping
     @Operation(summary = "Listar todos os pets")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Lista de pets retornada com sucesso"),
+            @ApiResponse(responseCode = "500", description = "Erro interno ao buscar pets")
+    })
+    @GetMapping
     public ResponseEntity<List<PetResponseDTO>> getAll() {
         List<PetResponseDTO> pets = petRepository.findAll()
                 .stream()
@@ -43,12 +51,12 @@ public class PetController {
         return ResponseEntity.ok(pets);
     }
 
-    @GetMapping("/{id}")
     @Operation(summary = "Buscar pet por ID")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Pet encontrado"),
             @ApiResponse(responseCode = "404", description = "Pet não encontrado")
     })
+    @GetMapping("/{id}")
     public ResponseEntity<PetResponseDTO> getById(@PathVariable Long id) {
         return petRepository.findById(id)
                 .map(petMapper::toDTO)
@@ -56,12 +64,12 @@ public class PetController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    @PutMapping("/{id}")
     @Operation(summary = "Atualizar pet por ID")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Pet atualizado com sucesso"),
             @ApiResponse(responseCode = "404", description = "Pet não encontrado")
     })
+    @PutMapping("/{id}")
     public ResponseEntity<PetResponseDTO> update(@PathVariable Long id, @RequestBody PetRequestDTO dto) {
         return petRepository.findById(id).map(existing -> {
             PetModel updated = petMapper.toModel(dto);
@@ -71,12 +79,12 @@ public class PetController {
         }).orElse(ResponseEntity.notFound().build());
     }
 
-    @DeleteMapping("/{id}")
     @Operation(summary = "Deletar pet por ID")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "204", description = "Pet deletado com sucesso"),
             @ApiResponse(responseCode = "404", description = "Pet não encontrado")
     })
+    @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
         return petRepository.findById(id).map(pet -> {
             petRepository.delete(pet);

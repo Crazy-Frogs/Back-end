@@ -20,32 +20,39 @@ public class UserModel {
 
     @NotBlank
     @Size(min = 3, max = 50)
+    @Column(nullable = false)
     private String username;
 
     @NotBlank
     @Size(min = 3 , max = 30)
     @Pattern(regexp = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=!])(?=\\S+$).+$", message = "A senha deve conter pelo menos um número, uma letra maiúscula, uma letra minúscula e um caractere especial.")
+    @Column(nullable = false)
     private String password;
 
     @Email
     @NotBlank
     @Size(max = 100)
-    @Column(unique = true)
+    @Column(unique = true , nullable = false)
     private String email;
 
     @NotBlank
     @Pattern(regexp = "^\\d{2}\\d{8,9}$", message = "Formato de telefone inválido (ex: 11987654321)")
-    @Column(unique = true)
+    @Column(unique = true , nullable = false)
     private String phone;
 
     @NotBlank
     @Size(max = 200)
+    @Column(nullable = false)
     private String address;
 
     @NotBlank
     @Pattern(regexp = "^\\d{7,9}X?$", message = "Formato de RG inválido")
-    @Column(unique = true)
+    @Column(unique = true , nullable = false)
     private String rg;
+
+    @NotBlank
+    @Column(nullable = false)
+    private String imageurl;
 
 
 }

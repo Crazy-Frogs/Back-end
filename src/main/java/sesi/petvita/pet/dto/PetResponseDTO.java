@@ -10,6 +10,7 @@ public record PetResponseDTO (
         Long id,
         String name,
         int age,
+        String imageurl,
         String personalizatedSpecies,
         String personalizedBreed,
         Species speciespet,

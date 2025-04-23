@@ -25,5 +25,9 @@ public record UserDTO(
         String address,
 
         @Schema(description = "RG do usuário", example = "123456789")
-        String rg
+        String rg,
+
+        @Schema(description = "Imagem do Usuario ", example = "https://i.pinimg.com/736x/1e/f6/42/1ef642c4c5864a930b260941dff37711.jpg")
+        String imageurl
+
 ) {}
