@@ -12,6 +12,7 @@ public class PetMapper {
     public PetModel toModel(PetRequestDTO dto) {
         return PetModel.builder()
                 .name(dto.name())
+                .imageurl(dto.imageurl())
                 .age(dto.age())
                 .personalizatedSpecies(dto.personalizatedSpecies())
                 .personalizedBreed(dto.personalizedBreed())
@@ -32,6 +33,7 @@ public class PetMapper {
                 model.getId(),
                 model.getName(),
                 model.getAge(),
+                model.getImageurl(),
                 model.getPersonalizatedSpecies(),
                 model.getPersonalizedBreed(),
                 model.getSpeciespet(),

@@ -1,8 +1,8 @@
 package sesi.petvita.user.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import sesi.petvita.user.role.UserRole;
 
-import java.util.UUID;
 
 @Schema(description = "Representa um usuário na resposta")
 public record UserDTO(
@@ -28,6 +28,9 @@ public record UserDTO(
         String rg,
 
         @Schema(description = "Imagem do Usuario ", example = "https://i.pinimg.com/736x/1e/f6/42/1ef642c4c5864a930b260941dff37711.jpg")
-        String imageurl
+        String imageurl,
+
+        @Schema(description = "Perfil do usuário", example = "USER")
+        UserRole role
 
 ) {}

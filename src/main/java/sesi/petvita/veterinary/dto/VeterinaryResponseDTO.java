@@ -17,6 +17,7 @@ public class VeterinaryResponseDTO {
     private String crmv;
     private String especialityenum;
     private String phone;
+    private String imageurl;
 
     public static VeterinaryResponseDTO fromModel(VeterinaryModel veterinaryModel){
         return VeterinaryResponseDTO.builder()
@@ -24,6 +25,9 @@ public class VeterinaryResponseDTO {
                 .name(veterinaryModel.getName())
                 .email(veterinaryModel.getEmail())
                 .phone(veterinaryModel.getPhone())
+                .imageurl(veterinaryModel.getImageurl())
+                .crmv(veterinaryModel.getCrmv())
+                .password(veterinaryModel.getPassword())
                 .especialityenum(veterinaryModel.getSpecialityenum().getDescricao()) // obter a descrição do Enum
                 .build();
     }

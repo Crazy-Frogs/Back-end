@@ -2,6 +2,7 @@ package sesi.petvita.user.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,9 +16,10 @@ import java.util.List;
 @RestController
 @RequestMapping("/users")
 @Tag(name = "Usuários", description = "Endpoints relacionados ao cadastro de usuários")
+@RequiredArgsConstructor
 public class UserController {
 
-    @Autowired
+
     UserRepository userRepository;
 
     @Operation(summary = "Buscar todos os usuários")
@@ -44,6 +46,8 @@ public class UserController {
                     existing.setPhone(user.getPhone());
                     existing.setAddress(user.getAddress());
                     existing.setRg(user.getRg());
+                    existing.setRole(user.getRole());
+                    existing.setImageurl(user.getImageurl());
                     return ResponseEntity.ok(userRepository.save(existing));
                 })
                 .orElse(ResponseEntity.notFound().build());

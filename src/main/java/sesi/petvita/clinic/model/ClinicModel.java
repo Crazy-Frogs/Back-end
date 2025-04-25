@@ -1,14 +1,20 @@
 package sesi.petvita.clinic.model;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
+import lombok.*;
+import sesi.petvita.clinic.careservices.CareServices;
 
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
+@Entity
+@Table(name = "clinics")
 public class ClinicModel {
 
     @Id
@@ -33,4 +39,8 @@ public class ClinicModel {
     @NotBlank
     @Size(max = 200)
     private String address;
+
+    @NotBlank
+    @Enumerated(EnumType.STRING)
+    private CareServices careServices;
 }

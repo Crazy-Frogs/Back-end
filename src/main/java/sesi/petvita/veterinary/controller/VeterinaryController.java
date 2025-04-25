@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,9 +17,9 @@ import java.util.List;
 @RestController
 @RequestMapping("/veterinary")
 @Tag(name = "Veterinary", description = "Gerenciamento de Veterinários")
+@RequiredArgsConstructor
 public class VeterinaryController {
 
-    @Autowired
     VeterinaryRepository veterinaryRepository;
 
     @GetMapping
@@ -48,6 +49,9 @@ public class VeterinaryController {
                     existing.setEmail(veterinary.getEmail());
                     existing.setPhone(veterinary.getPhone());
                     existing.setCrmv(veterinary.getCrmv());
+                    existing.setSpecialityenum(veterinary.getSpecialityenum());
+                    existing.setImageurl(veterinary.getImageurl());
+                    existing.setPassword(veterinary.getPassword());
                     return ResponseEntity.ok(veterinaryRepository.save(existing));
                 })
                 .orElse(ResponseEntity.notFound().build());

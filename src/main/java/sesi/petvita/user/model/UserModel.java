@@ -3,6 +3,8 @@ package sesi.petvita.user.model;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import lombok.*;
+import sesi.petvita.user.role.UserRole;
+
 import java.util.UUID;
 
 @Getter
@@ -54,5 +56,7 @@ public class UserModel {
     @Column(nullable = false)
     private String imageurl;
 
-
+    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
+    private UserRole role;
 }
