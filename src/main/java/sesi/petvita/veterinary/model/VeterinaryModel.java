@@ -6,7 +6,10 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.*;
+import sesi.petvita.consultation.model.ConsultationModel;
 import sesi.petvita.veterinary.speciality.SpecialityEnum;
+
+import java.util.List;
 
 @Getter
 @Setter
@@ -56,5 +59,9 @@ public class VeterinaryModel {
     @NotBlank
     @Column(nullable = false)
     private String imageurl;
+
+    @OneToMany(mappedBy = "veterinario")
+    private List<ConsultationModel> consultas;
+
 
 }

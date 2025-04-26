@@ -2,6 +2,7 @@ package sesi.petvita.consultation.model;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 
 import sesi.petvita.clinic.model.ClinicModel;
@@ -27,6 +28,10 @@ public class ConsultationModel {
         @Id
         @GeneratedValue(strategy = GenerationType.IDENTITY)
         private Long id;
+
+        @Column(nullable = false)
+        @NotBlank
+        private String imageurl;
 
         @JsonFormat(pattern = "yyyy-MM-dd")
         @Column(nullable = false)
@@ -79,5 +84,7 @@ public class ConsultationModel {
         public void preUpdate() {
             this.dataAtualizacao = LocalDateTime.now();
         }
+
+
     }
 

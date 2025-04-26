@@ -1,12 +1,12 @@
 package sesi.petvita.clinic.model;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Pattern;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.*;
 import lombok.*;
 import sesi.petvita.clinic.careservices.CareServices;
+import sesi.petvita.consultation.model.ConsultationModel;
+
+import java.util.List;
 
 @Getter
 @Setter
@@ -14,7 +14,7 @@ import sesi.petvita.clinic.careservices.CareServices;
 @NoArgsConstructor
 @Builder
 @Entity
-@Table(name = "clinics")
+@Table(name = "clinicas")
 public class ClinicModel {
 
     @Id
@@ -40,7 +40,15 @@ public class ClinicModel {
     @Size(max = 200)
     private String address;
 
-    @NotBlank
+    @NotNull
     @Enumerated(EnumType.STRING)
     private CareServices careServices;
+
+    @NotBlank
+    private String imageurl;
+
+    @OneToMany(mappedBy = "clinica", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ConsultationModel> consultas;
+
+
 }

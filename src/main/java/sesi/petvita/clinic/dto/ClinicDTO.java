@@ -21,7 +21,10 @@ public record ClinicDTO(
         String address,
 
        @Schema(description = "Endereço completo", example = "Rua Exemplo, 123 - São Paulo")
-        CareServices careServices
+        CareServices careServices,
+
+        @Schema(description = "Imagem da clinica ", example = "https://i.pinimg.com/736x/1e/f6/42/1ef642c4c5864a930b260941dff37711.jpg")
+        String imageurl
 ) {
 
 

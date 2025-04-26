@@ -3,8 +3,11 @@ package sesi.petvita.user.model;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import lombok.*;
+import sesi.petvita.consultation.model.ConsultationModel;
+import sesi.petvita.pet.model.PetModel;
 import sesi.petvita.user.role.UserRole;
 
+import java.util.List;
 import java.util.UUID;
 
 @Getter
@@ -13,7 +16,7 @@ import java.util.UUID;
 @AllArgsConstructor
 @Builder
 @Entity
-@Table(name = "user")
+@Table(name = "users")
 public class UserModel {
 
     @Id
@@ -59,4 +62,12 @@ public class UserModel {
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private UserRole role;
+
+    @OneToMany(mappedBy = "usuario" ,cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ConsultationModel> consultas;
+
+    @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<PetModel> pets;
+
+
 }

@@ -33,4 +33,7 @@ public record UserDTO(
         @Schema(description = "Perfil do usuário", example = "USER")
         UserRole role
 
+
+
+
 ) {}

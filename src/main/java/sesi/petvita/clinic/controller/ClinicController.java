@@ -53,6 +53,7 @@ public class ClinicController {
                     existing.setPhone(clinic.getPhone());
                     existing.setAddress(clinic.getAddress());
                     existing.setCareServices(clinic.getCareServices());
+                    existing.setImageurl(clinic.getImageurl());
                     return ResponseEntity.ok(clinicRepository.save(existing));
                 })
                 .orElse(ResponseEntity.notFound().build());
