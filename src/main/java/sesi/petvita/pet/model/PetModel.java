@@ -35,10 +35,10 @@ public class PetModel {
     @Min(0)
     private int age;
 
-    @Size(min = 3 , max = 50)
+
     private String personalizatedSpecies;
 
-    @Size(min = 3 , max = 50)
+
     private String personalizedBreed;
 
     @Enumerated(EnumType.STRING)

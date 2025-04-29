@@ -39,6 +39,8 @@ public record PetRequestDTO(
         FishBreed fishBreed,
         RabbitBreed rabbitBreed,
         ReptileBreed reptileBreed,
-        RodentBreed rodentBreed
-) {}
+        RodentBreed rodentBreed,
 
+        @NotNull
+        Long usuarioId
+) {}

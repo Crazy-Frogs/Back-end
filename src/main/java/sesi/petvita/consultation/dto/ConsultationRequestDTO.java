@@ -30,9 +30,6 @@ public record ConsultationRequestDTO(
 
 
         @NotNull
-        String imageurl,
-
-        @NotNull
         ConsultationStatus status,
 
         @NotBlank

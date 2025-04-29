@@ -21,6 +21,5 @@ public record ConsultationResponseDTO(
         Long veterinarioId,
         Long clinicaId,
         LocalDateTime dataCriacao,
-        LocalDateTime dataAtualizacao,
-        String imageurl
+        LocalDateTime dataAtualizacao
 ) {}

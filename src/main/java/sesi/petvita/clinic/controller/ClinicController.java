@@ -3,6 +3,7 @@ package sesi.petvita.clinic.controller;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import sesi.petvita.clinic.model.ClinicModel;
@@ -14,11 +15,14 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/clinic")
-@Tag(name = "Usuários", description = "Endpoints relacionados ao cadastro de clinicas")
+@Tag(name = "Clinicas", description = "Endpoints relacionados ao cadastro de clinicas")
 @RequiredArgsConstructor
 public class ClinicController {
 
+    @Autowired
     private final UserRepository userRepository;
+
+    @Autowired
     private ClinicRepository clinicRepository;
 
     @GetMapping

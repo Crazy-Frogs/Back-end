@@ -19,7 +19,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class UserController {
 
-
+    @Autowired
     UserRepository userRepository;
 
     @Operation(summary = "Buscar todos os usuários")

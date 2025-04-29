@@ -45,6 +45,7 @@ public class PetMapper {
                 model.getRabbitBreed(),
                 model.getReptileBreed(),
                 model.getRodentBreed()
+
         );
     }
 }

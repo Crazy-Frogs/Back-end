@@ -49,8 +49,7 @@ public class ConsultationMapper {
                 model.getVeterinario().getId(),
                 model.getClinica().getId(),
                 model.getDataCriacao(),
-                model.getDataAtualizacao(),
-                model.getImageurl()
+                model.getDataAtualizacao()
         );
     }
 }

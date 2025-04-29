@@ -20,6 +20,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class VeterinaryController {
 
+    @Autowired
     VeterinaryRepository veterinaryRepository;
 
     @GetMapping

@@ -29,9 +29,6 @@ public class ConsultationModel {
         @GeneratedValue(strategy = GenerationType.IDENTITY)
         private Long id;
 
-        @Column(nullable = false)
-        @NotBlank
-        private String imageurl;
 
         @JsonFormat(pattern = "yyyy-MM-dd")
         @Column(nullable = false)

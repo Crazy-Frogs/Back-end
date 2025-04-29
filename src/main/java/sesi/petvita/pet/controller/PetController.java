@@ -12,6 +12,8 @@ import sesi.petvita.pet.dto.PetResponseDTO;
 import sesi.petvita.pet.mapper.PetMapper;
 import sesi.petvita.pet.model.PetModel;
 import sesi.petvita.pet.repository.PetRepository;
+import sesi.petvita.user.model.UserModel;
+import sesi.petvita.user.repository.UserRepository;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -24,6 +26,7 @@ public class PetController {
 
     private final PetRepository petRepository;
     private final PetMapper petMapper;
+    private final UserRepository userRepository;
 
     @Operation(summary = "Cadastrar um novo pet")
     @ApiResponses(value = {
@@ -33,9 +36,17 @@ public class PetController {
     @PostMapping
     public ResponseEntity<PetResponseDTO> create(@RequestBody PetRequestDTO dto) {
         PetModel pet = petMapper.toModel(dto);
+
+
+        UserModel usuario = userRepository.findById(dto.usuarioId())
+                .orElseThrow(() -> new RuntimeException("Usuário não encontrado com o ID: " + dto.usuarioId()));
+
+        pet.setUsuario(usuario); // Associa o UserModel ao PetModel
+
         PetModel saved = petRepository.save(pet);
         return ResponseEntity.ok(petMapper.toDTO(saved));
     }
+
 
     @Operation(summary = "Listar todos os pets")
     @ApiResponses(value = {
