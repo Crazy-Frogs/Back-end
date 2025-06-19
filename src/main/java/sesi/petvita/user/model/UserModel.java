@@ -1,8 +1,6 @@
-package com.clinic.vet_clinic.user.model;
+package sesi.petvita.user.model;
 
-import com.clinic.vet_clinic.consultation.model.ConsultationModel;
-import com.clinic.vet_clinic.pet.model.PetModel;
-import com.clinic.vet_clinic.user.role.UserRole;
+
 import com.fasterxml.jackson.annotation.JsonIgnore; // Importe esta anotação!
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
@@ -11,6 +9,9 @@ import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+import sesi.petvita.consultation.model.ConsultationModel;
+import sesi.petvita.pet.model.PetModel;
+import sesi.petvita.user.role.UserRole;
 
 
 import java.util.Collection;
@@ -69,45 +70,42 @@ public class UserModel implements UserDetails {
     @Enumerated(EnumType.STRING)
     private UserRole role;
 
-    @JsonManagedReference // <-- ADICIONE AQUI
+    @JsonManagedReference
     @OneToMany(mappedBy = "usuario" ,cascade = CascadeType.ALL, orphanRemoval = true,fetch = FetchType.EAGER)
     private List<ConsultationModel> consultas;
 
-    @JsonManagedReference // <-- ADICIONE AQUI
+    @JsonManagedReference
     @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<PetModel> pets;
 
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        // O prefixo 'ROLE_' é um padrão do Spring Security
         return List.of(new SimpleGrantedAuthority("ROLE_" + role.name()));
     }
 
     @Override
     public String getUsername() {
-        // O Spring Security usará este método, que deve retornar o identificador único.
-        // No seu caso, é o email.
         return email;
     }
 
     @Override
     public boolean isAccountNonExpired() {
-        return true; // Você pode adicionar lógica para expirar contas
+        return true;
     }
 
     @Override
     public boolean isAccountNonLocked() {
-        return true; // Você pode adicionar lógica para bloquear contas
+        return true;
     }
 
     @Override
     public boolean isCredentialsNonExpired() {
-        return true; // Você pode adicionar lógica para expirar credenciais
+        return true;
     }
 
     @Override
     public boolean isEnabled() {
-        return true; // Você pode adicionar lógica para desabilitar contas
+        return true;
     }
 }

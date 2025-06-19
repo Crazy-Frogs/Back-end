@@ -1,33 +1,24 @@
-package com.clinic.vet_clinic.user.controller; // Ajuste o pacote conforme sua estrutura
+package sesi.petvita.user.controller; // Ajuste o pacote conforme sua estrutura
 
-import com.clinic.vet_clinic.user.model.UserModel;
-import com.clinic.vet_clinic.user.repository.UserRepository;
-import com.clinic.vet_clinic.user.dto.UserRequestDTO;
-// Removendo import da CloudinaryService
-// import com.clinic.vet_clinic.config.CloudinaryService;
-
-import com.clinic.vet_clinic.user.role.UserRole;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.validation.Valid; // Adicione se estiver usando validação no UserModel
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.security.core.Authentication; // <-- Adicione este import
-import org.springframework.security.core.annotation.AuthenticationPrincipal; // <-- Adicione este import
-import org.springframework.security.core.userdetails.UserDetails;
-// Removendo import de MultipartFile
-// import org.springframework.web.multipart.MultipartFile;
+import org.springframework.security.core.Authentication;
+import sesi.petvita.user.dto.UserRequestDTO;
+import sesi.petvita.user.dto.UserResponseDTO;
+import sesi.petvita.user.mapper.UserMapper;
+import sesi.petvita.user.model.UserModel;
+import sesi.petvita.user.repository.UserRepository;
+import sesi.petvita.user.role.UserRole;
 
 import java.util.List;
 import java.util.Optional;
-
-import com.clinic.vet_clinic.user.dto.UserResponseDTO;
-import com.clinic.vet_clinic.user.mapper.UserMapper;
-import java.util.List;
 import java.util.stream.Collectors;
 
 
@@ -38,20 +29,18 @@ public class UserController {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
-    private final UserMapper userMapper; // <-- Injete o Mapper
+    private final UserMapper userMapper;
 
     @GetMapping
     @Operation(summary = "Listar todos os usuários")
     public ResponseEntity<List<UserResponseDTO>> getAllUsers() {
         List<UserModel> users = userRepository.findAll();
-        // Converte a lista de entidades para DTOs
         List<UserResponseDTO> userDTOs = users.stream()
                 .map(userMapper::toDTO)
                 .collect(Collectors.toList());
         return ResponseEntity.ok(userDTOs);
     }
 
-    // GET /users/{id} - Buscar usuário por ID
     @GetMapping("/{id}")
     @Operation(summary = "Buscar usuário por ID")
     public ResponseEntity<UserModel> getUserById(@PathVariable Long id) {
@@ -60,12 +49,9 @@ public class UserController {
                 .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).build());
     }
 
-    // ADICIONE ESTE NOVO MÉTODO DENTRO DA CLASSE
     @GetMapping("/me")
     @Operation(summary = "Verificar dados do usuário logado")
     public ResponseEntity<Object> getCurrentUser(Authentication authentication) {
-        // Retorna os detalhes do principal (usuário) e suas permissões (authorities)
-        // Isso nos dirá exatamente qual é a ROLE que o Spring está vendo.
         return ResponseEntity.ok(authentication.getPrincipal());
     }
 
@@ -73,20 +59,19 @@ public class UserController {
     @PostMapping("/register")
     public ResponseEntity<?> registerUser(@Valid @RequestBody UserRequestDTO requestDTO) { // <-- MUDANÇA AQUI
         try {
-            // Converte o DTO recebido para a entidade
+
             UserModel user = userMapper.toModel(requestDTO);
 
-            // Define o papel padrão para novos usuários
+
             user.setRole(UserRole.USER);
-            // Codifica a senha
+
             user.setPassword(passwordEncoder.encode(requestDTO.password()));
 
             UserModel savedUser = userRepository.save(user);
 
-            // Retorna um DTO de resposta, e não a entidade completa
             return ResponseEntity.status(HttpStatus.CREATED).body(userMapper.toDTO(savedUser));
         } catch (Exception e) {
-            // Trata erros de constraint (ex: email ou rg duplicado)
+
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body("Erro ao registrar usuário: " + e.getMessage());
         }
@@ -103,13 +88,12 @@ public class UserController {
         if (existingUserOptional.isPresent()) {
             UserModel existingUser = existingUserOptional.get();
 
-            // Atualiza os campos que podem ser alterados
+
             existingUser.setUsername(updatedUser.getUsername());
             existingUser.setEmail(updatedUser.getEmail());
             existingUser.setPhone(updatedUser.getPhone());
             existingUser.setAddress(updatedUser.getAddress());
             existingUser.setRg(updatedUser.getRg());
-            // A URL da imagem vem diretamente do JSON
             existingUser.setImageurl(updatedUser.getImageurl()); // Atualiza ou define como nulo
 
             if (updatedUser.getPassword() != null && !updatedUser.getPassword().isEmpty()) {
@@ -131,7 +115,7 @@ public class UserController {
         }
     }
 
-    // DELETE /users/{id} - Deletar usuário
+
     @DeleteMapping("/{id}")
     @Operation(summary = "Deletar usuário pelo ID")
     public ResponseEntity<String> deleteUser(@PathVariable Long id) {
