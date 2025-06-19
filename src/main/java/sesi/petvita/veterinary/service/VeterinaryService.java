@@ -1,4 +1,4 @@
-package com.clinic.vet_clinic.veterinary.service;
+package sesi.petvita.veterinary.service;
 
 public class VeterinaryService {
 }

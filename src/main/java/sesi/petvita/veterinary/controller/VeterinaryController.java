@@ -1,18 +1,20 @@
-package com.clinic.vet_clinic.veterinary.controller;
+package sesi.petvita.veterinary.controller;
 
-import com.clinic.vet_clinic.veterinary.dto.VeterinaryRequestDTO;
-import com.clinic.vet_clinic.veterinary.dto.VeterinaryResponseDTO;
-import com.clinic.vet_clinic.veterinary.mapper.VeterinaryMapper;
-import com.clinic.vet_clinic.veterinary.model.VeterinaryModel;
-import com.clinic.vet_clinic.veterinary.repository.VeterinaryRepository;
+
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import lombok.RequiredArgsConstructor; // Garanta que este import existe
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.crypto.password.PasswordEncoder; // Garanta que este import existe
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
+import sesi.petvita.veterinary.dto.VeterinaryRequestDTO;
+import sesi.petvita.veterinary.dto.VeterinaryResponseDTO;
+import sesi.petvita.veterinary.mapper.VeterinaryMapper;
+import sesi.petvita.veterinary.model.VeterinaryModel;
+import sesi.petvita.veterinary.repository.VeterinaryRepository;
+
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;

@@ -1,7 +1,7 @@
-package com.clinic.vet_clinic.veterinary.dto;
+package sesi.petvita.veterinary.dto;
 
-import com.clinic.vet_clinic.veterinary.speciality.SpecialityEnum;
 
+import sesi.petvita.veterinary.speciality.SpecialityEnum;
 
 public record VeterinaryResponseDTO(
         Long id,

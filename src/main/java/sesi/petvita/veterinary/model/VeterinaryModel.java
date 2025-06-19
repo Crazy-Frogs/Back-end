@@ -1,13 +1,14 @@
-package com.clinic.vet_clinic.veterinary.model;
+package sesi.petvita.veterinary.model;
 
-import com.clinic.vet_clinic.consultation.model.ConsultationModel;
-import com.clinic.vet_clinic.veterinary.speciality.SpecialityEnum;
+
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.*;
+import sesi.petvita.consultation.model.ConsultationModel;
+import sesi.petvita.veterinary.speciality.SpecialityEnum;
 
 
 import java.util.List;
