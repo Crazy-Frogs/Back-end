@@ -1,8 +1,9 @@
-package com.clinic.vet_clinic.pet.repository;
+package sesi.petvita.pet.repository;
 
-import com.clinic.vet_clinic.pet.model.PetModel;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
+import sesi.petvita.pet.model.PetModel;
 
 
 @Repository

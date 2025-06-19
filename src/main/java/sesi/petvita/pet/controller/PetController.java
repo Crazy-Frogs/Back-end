@@ -1,12 +1,6 @@
-package com.clinic.vet_clinic.pet.controller;
+package sesi.petvita.pet.controller;
 
-import com.clinic.vet_clinic.pet.dto.PetRequestDTO;
-import com.clinic.vet_clinic.pet.dto.PetResponseDTO;
-import com.clinic.vet_clinic.pet.mapper.PetMapper;
-import com.clinic.vet_clinic.pet.model.PetModel;
-import com.clinic.vet_clinic.pet.repository.PetRepository;
-import com.clinic.vet_clinic.user.model.UserModel;
-import com.clinic.vet_clinic.user.repository.UserRepository;
+
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -14,6 +8,13 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import sesi.petvita.pet.dto.PetRequestDTO;
+import sesi.petvita.pet.dto.PetResponseDTO;
+import sesi.petvita.pet.mapper.PetMapper;
+import sesi.petvita.pet.model.PetModel;
+import sesi.petvita.pet.repository.PetRepository;
+import sesi.petvita.user.model.UserModel;
+import sesi.petvita.user.repository.UserRepository;
 
 import java.util.List;
 import java.util.Optional;
@@ -51,16 +52,11 @@ public class PetController {
     @PostMapping
     @Operation(summary = "Cadastrar um novo pet")
     public ResponseEntity<?> createPet(@Valid @RequestBody PetRequestDTO petDto) {
-        // --- LÓGICA CORRIGIDA ---
-        // 1. Busca o usuário dono do pet
         Optional<UserModel> ownerOptional = userRepository.findById(petDto.usuarioId());
-
-        // 2. Se o dono não for encontrado, retorna um erro 404
         if (ownerOptional.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Usuário dono do pet não encontrado.");
         }
         UserModel owner = ownerOptional.get();
-        // --- FIM DA CORREÇÃO ---
 
         PetModel pet = petMapper.toModel(petDto);
         pet.setUsuario(owner);
@@ -89,18 +85,15 @@ public class PetController {
         if (newOwnerOptional.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Novo usuário dono do pet não encontrado.");
         }
-        // --- FIM DA CORREÇÃO ---
 
         PetModel existingPet = existingPetOptional.get();
         UserModel newOwner = newOwnerOptional.get();
 
-        // Atualiza os campos do pet existente
         existingPet.setUsuario(newOwner);
         existingPet.setName(petDto.name());
         existingPet.setAge(petDto.age());
         existingPet.setImageurl(petDto.imageurl());
         existingPet.setSpeciespet(petDto.speciespet());
-        // ... adicione outros campos para atualizar se necessário
 
         try {
             PetModel savedPet = petRepository.save(existingPet);

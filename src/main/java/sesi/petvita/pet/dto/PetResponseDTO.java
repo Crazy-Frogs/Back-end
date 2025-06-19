@@ -1,9 +1,10 @@
-package com.clinic.vet_clinic.pet.dto;
+package sesi.petvita.pet.dto;
 
-import com.clinic.vet_clinic.pet.breed.*;
-import com.clinic.vet_clinic.pet.gender.Gender;
-import com.clinic.vet_clinic.pet.species.Species;
+
 import com.fasterxml.jackson.annotation.JsonInclude;
+import sesi.petvita.pet.breed.*;
+import sesi.petvita.pet.gender.Gender;
+import sesi.petvita.pet.species.Species;
 
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
