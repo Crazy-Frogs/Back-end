@@ -1,13 +1,12 @@
-package com.clinic.vet_clinic.config;
+package sesi.petvita.config;
 
-
-import com.clinic.vet_clinic.user.model.UserModel;
-import com.clinic.vet_clinic.user.repository.UserRepository;
-import com.clinic.vet_clinic.user.role.UserRole;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import sesi.petvita.user.model.UserModel;
+import sesi.petvita.user.repository.UserRepository;
+import sesi.petvita.user.role.UserRole;
 
 import java.util.Optional;
 
@@ -17,13 +16,10 @@ public class AdminInitializer {
     @Bean
     public CommandLineRunner initAdminUser(UserRepository userRepository, PasswordEncoder passwordEncoder) {
         return args -> {
-            // ======== FAÇA A MUDANÇA TEMPORÁRIA AQUI ========
             final String adminUsername = "meu-admin";                 // <-- Mude para um novo nome
             final String adminEmail = "meuadmin@vetclinic.com";     // <-- Mude para um novo email
-            final String adminPassword = "MinhaSenhaAdmin@123";    // <-- Coloque uma nova senha forte
-            // ======================================================
+            final String adminPassword = "MinhaSenhaAdmin@123";    // <-- Coloque uma nova senha
 
-            // O resto do código pode continuar igual
             final String adminPhone = "11900000000";
             final String adminAddress = "Rua Admin, 123";
             final String adminRg = "987654321";
