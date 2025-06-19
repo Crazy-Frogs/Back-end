@@ -1,23 +1,23 @@
-package com.clinic.vet_clinic.consultation.service;
+package sesi.petvita.consultation.service;
 
-import com.clinic.vet_clinic.clinic.model.ClinicModel;
-import com.clinic.vet_clinic.clinic.repository.ClinicRepository;
-import com.clinic.vet_clinic.consultation.dto.ConsultationRequestDTO;
-import com.clinic.vet_clinic.consultation.dto.ConsultationResponseDTO;
-import com.clinic.vet_clinic.consultation.mapper.ConsultationMapper;
-import com.clinic.vet_clinic.consultation.model.ConsultationModel;
-import com.clinic.vet_clinic.consultation.repository.ConsultationRepository;
-import com.clinic.vet_clinic.pet.model.PetModel;
-import com.clinic.vet_clinic.pet.repository.PetRepository;
-import com.clinic.vet_clinic.user.model.UserModel;
-import com.clinic.vet_clinic.user.repository.UserRepository;
-import com.clinic.vet_clinic.veterinary.model.VeterinaryModel;
-import com.clinic.vet_clinic.veterinary.repository.VeterinaryRepository;
-import com.clinic.vet_clinic.veterinary.speciality.SpecialityEnum;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication; // Importe este
-import com.clinic.vet_clinic.user.role.UserRole; // E este
 import org.springframework.stereotype.Service;
+import sesi.petvita.clinic.model.ClinicModel;
+import sesi.petvita.clinic.repository.ClinicRepository;
+import sesi.petvita.consultation.dto.ConsultationRequestDTO;
+import sesi.petvita.consultation.dto.ConsultationResponseDTO;
+import sesi.petvita.consultation.mapper.ConsultationMapper;
+import sesi.petvita.consultation.model.ConsultationModel;
+import sesi.petvita.consultation.repository.ConsultationRepository;
+import sesi.petvita.pet.model.PetModel;
+import sesi.petvita.pet.repository.PetRepository;
+import sesi.petvita.user.model.UserModel;
+import sesi.petvita.user.repository.UserRepository;
+import sesi.petvita.veterinary.model.VeterinaryModel;
+import sesi.petvita.veterinary.repository.VeterinaryRepository;
+import sesi.petvita.veterinary.speciality.SpecialityEnum;
 
 
 import java.time.LocalDate;
@@ -30,7 +30,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class ConsultationService {
 
-    // --- INJEÇÃO DE DEPENDÊNCIAS ---
+
     private final ConsultationRepository consultationRepository;
     private final UserRepository userRepository;
     private final PetRepository petRepository;
@@ -45,20 +45,15 @@ public class ConsultationService {
                 .collect(Collectors.toList());
     }
 
-    /**
-     * NOVO MÉTODO: Retorna apenas as consultas do usuário logado.
-     */
     public List<ConsultationResponseDTO> findForAuthenticatedUser(Authentication authentication) {
         UserModel loggedInUser = (UserModel) authentication.getPrincipal();
 
-        // Usa o método de busca por ID de usuário que já criamos no repositório
         return consultationRepository.findByUsuarioId(loggedInUser.getId()).stream()
                 .map(consultationMapper::toDTO)
                 .collect(Collectors.toList());
     }
 
     public ConsultationResponseDTO save(ConsultationRequestDTO dto) {
-        // 1. VALIDAÇÃO DE CONFLITO DE HORÁRIO (INTERVALO DE 40 MINUTOS)
         LocalTime newAppointmentTime = dto.consultationtime();
         LocalTime startTime = newAppointmentTime.minusMinutes(39);
         LocalTime endTime = newAppointmentTime.plusMinutes(39);
@@ -75,7 +70,6 @@ public class ConsultationService {
             throw new IllegalStateException("Conflito de horário. Já existe uma consulta agendada a menos de 40 minutos deste horário para o mesmo veterinário.");
         }
 
-        // 2. BUSCA DAS ENTIDADES
         UserModel user = userRepository.findById(dto.usuarioId())
                 .orElseThrow(() -> new NoSuchElementException("Usuário não encontrado com o ID: " + dto.usuarioId()));
         PetModel pet = petRepository.findById(dto.petId())
@@ -99,14 +93,10 @@ public class ConsultationService {
                 .clinica(clinic)
                 .build();
 
-        // 4. PERSISTÊNCIA E RESPOSTA
         ConsultationModel savedConsultation = consultationRepository.save(newConsultation);
         return consultationMapper.toDTO(savedConsultation);
     }
 
-    /**
-     * Atualiza uma consulta existente.
-     */
     public ConsultationResponseDTO update(Long id, ConsultationRequestDTO dto) {
         ConsultationModel existingConsultation = consultationRepository.findById(id)
                 .orElseThrow(() -> new NoSuchElementException("Consulta não encontrada para atualização com o ID: " + id));
@@ -131,17 +121,12 @@ public class ConsultationService {
         return consultationMapper.toDTO(updatedConsultation);
     }
 
-    /**
-     * Deleta uma consulta por ID.
-     */
     public void delete(Long id) {
         if (!consultationRepository.existsById(id)) {
             throw new NoSuchElementException("Consulta não encontrada para exclusão com o ID: " + id);
         }
         consultationRepository.deleteById(id);
     }
-
-    // --- MÉTODOS DE BUSCA E PESQUISA ---
 
     public List<ConsultationResponseDTO> findAll() {
         return consultationRepository.findAll().stream()

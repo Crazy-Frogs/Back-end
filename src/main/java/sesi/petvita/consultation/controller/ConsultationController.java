@@ -1,10 +1,6 @@
-// ConsultationController.java
-package com.clinic.vet_clinic.consultation.controller;
+package sesi.petvita.consultation.controller;
 
-import com.clinic.vet_clinic.consultation.dto.ConsultationRequestDTO;
-import com.clinic.vet_clinic.consultation.dto.ConsultationResponseDTO;
-import com.clinic.vet_clinic.consultation.service.ConsultationService;
-import com.clinic.vet_clinic.veterinary.speciality.SpecialityEnum;
+
 import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -12,6 +8,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
+import sesi.petvita.consultation.dto.ConsultationRequestDTO;
+import sesi.petvita.consultation.dto.ConsultationResponseDTO;
+import sesi.petvita.consultation.service.ConsultationService;
+import sesi.petvita.veterinary.speciality.SpecialityEnum;
 
 
 import java.time.LocalDate;

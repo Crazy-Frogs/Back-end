@@ -1,10 +1,12 @@
-package com.clinic.vet_clinic.consultation.dto;
+package sesi.petvita.consultation.dto;
 
-import com.clinic.vet_clinic.consultation.status.ConsultationStatus;
+
+import sesi.petvita.consultation.status.ConsultationStatus;
+
 import java.time.LocalDate;
 import java.time.LocalTime;
 
-// Este DTO agora terá os nomes em vez dos objetos completos
+
 public record ConsultationResponseDTO(
         Long id,
         LocalDate consultationdate,

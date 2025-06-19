@@ -1,15 +1,16 @@
-package com.clinic.vet_clinic.consultation.model;
+package sesi.petvita.consultation.model;
 
-import com.clinic.vet_clinic.clinic.model.ClinicModel;
-import com.clinic.vet_clinic.consultation.status.ConsultationStatus;
-import com.clinic.vet_clinic.pet.model.PetModel;
-import com.clinic.vet_clinic.user.model.UserModel;
-import com.clinic.vet_clinic.veterinary.model.VeterinaryModel;
-import com.clinic.vet_clinic.veterinary.speciality.SpecialityEnum;
+
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import lombok.*;
+import sesi.petvita.clinic.model.ClinicModel;
+import sesi.petvita.consultation.status.ConsultationStatus;
+import sesi.petvita.pet.model.PetModel;
+import sesi.petvita.user.model.UserModel;
+import sesi.petvita.veterinary.model.VeterinaryModel;
+import sesi.petvita.veterinary.speciality.SpecialityEnum;
 
 
 import java.time.LocalDate;
@@ -51,12 +52,12 @@ public class ConsultationModel {
         @Column(nullable = false)
         private String observations;
 
-        @JsonBackReference // <-- ADICIONE AQUI
+        @JsonBackReference
         @ManyToOne(fetch = FetchType.EAGER)
         @JoinColumn(name = "pet_id")
         private PetModel pet;
 
-        @JsonBackReference // <-- ADICIONE AQUI
+        @JsonBackReference
         @ManyToOne
         @JoinColumn(name = "usuario_id")
         private UserModel usuario;

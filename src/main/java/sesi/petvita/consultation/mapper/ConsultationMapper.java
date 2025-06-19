@@ -1,8 +1,9 @@
-package com.clinic.vet_clinic.consultation.mapper;
+package sesi.petvita.consultation.mapper;
 
-import com.clinic.vet_clinic.consultation.dto.ConsultationResponseDTO;
-import com.clinic.vet_clinic.consultation.model.ConsultationModel;
+
 import org.springframework.stereotype.Component;
+import sesi.petvita.consultation.dto.ConsultationResponseDTO;
+import sesi.petvita.consultation.model.ConsultationModel;
 
 @Component
 public class ConsultationMapper {

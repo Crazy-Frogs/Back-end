@@ -1,4 +1,4 @@
-package com.clinic.vet_clinic.consultation.status;
+package sesi.petvita.consultation.status;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
