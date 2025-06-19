@@ -1,7 +1,8 @@
-package sesi.petvita.user.dto;
+package com.clinic.vet_clinic.user.dto;
 
+import com.clinic.vet_clinic.user.role.UserRole;
 import io.swagger.v3.oas.annotations.media.Schema;
-import sesi.petvita.user.role.UserRole;
+
 
 
 @Schema(description = "Representa um usuário na resposta")

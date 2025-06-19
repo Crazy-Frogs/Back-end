@@ -1,5 +1,11 @@
-package sesi.petvita.pet.model;
+package com.clinic.vet_clinic.pet.model;
 
+import com.clinic.vet_clinic.consultation.model.ConsultationModel;
+import com.clinic.vet_clinic.pet.breed.*;
+import com.clinic.vet_clinic.pet.dto.PetRequestDTO;
+import com.clinic.vet_clinic.pet.gender.Gender;
+import com.clinic.vet_clinic.pet.species.Species;
+import com.clinic.vet_clinic.user.model.UserModel;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
@@ -7,12 +13,7 @@ import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.*;
-import sesi.petvita.consultation.model.ConsultationModel;
-import sesi.petvita.pet.breed.*;
-import sesi.petvita.pet.dto.PetRequestDTO;
-import sesi.petvita.pet.gender.Gender;
-import sesi.petvita.pet.species.Species;
-import sesi.petvita.user.model.UserModel;
+
 
 import java.util.List;
 
@@ -77,11 +78,11 @@ public class PetModel {
     @Enumerated(EnumType.STRING)
     private RodentBreed rodentBreed;
 
-    @JsonManagedReference
+    @JsonManagedReference // <-- ADICIONE AQUI (Pet é o 'pai' da consulta)
     @OneToMany(mappedBy = "pet", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ConsultationModel> consultas;
 
-    @JsonBackReference
+    @JsonBackReference // <-- ADICIONE AQUI (User é o 'pai' do Pet)
     @ManyToOne
     @JoinColumn(name = "usuario_id", nullable = false)
     private UserModel usuario;
@@ -105,3 +106,6 @@ public class PetModel {
     }
 
 }
+
+
+

@@ -1,14 +1,14 @@
-package sesi.petvita.consultation.dto;
+package com.clinic.vet_clinic.consultation.dto;
 
+import com.clinic.vet_clinic.consultation.status.ConsultationStatus;
+import com.clinic.vet_clinic.veterinary.speciality.SpecialityEnum;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import jakarta.persistence.Column;
 import jakarta.validation.constraints.FutureOrPresent;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
-import sesi.petvita.consultation.status.ConsultationStatus;
-import sesi.petvita.veterinary.speciality.SpecialityEnum;
+
 
 import java.time.LocalDate;
 import java.time.LocalTime;

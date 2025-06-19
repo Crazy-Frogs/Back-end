@@ -1,14 +1,17 @@
-package com.clinic.vet_clinic.clinic.dto;
+package com.clinic.vet_clinic.user.dto;
 
-import com.clinic.vet_clinic.clinic.careservices.CareServices;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 
-public record ClinicRequestDTO(
+public record UserRequestDTO(
         @NotBlank @Size(min = 3, max = 50)
-        String name,
+        String username,
+
+        @NotBlank
+        @Pattern(regexp = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=!])(?=\\S+$).+$", message = "A senha deve ser forte.")
+        String password,
 
         @Email @NotBlank @Size(max = 100)
         String email,
@@ -19,7 +22,8 @@ public record ClinicRequestDTO(
         @NotBlank @Size(max = 200)
         String address,
 
-        CareServices careServices,
+        @NotBlank @Pattern(regexp = "^\\d{7,9}X?$", message = "Formato de RG inválido")
+        String rg,
 
         @NotBlank
         String imageurl

@@ -1,4 +1,4 @@
-package sesi.petvita.user.role;
+package com.clinic.vet_clinic.user.role;
 
 public enum UserRole {
     USER,

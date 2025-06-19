@@ -1,105 +1,124 @@
-package sesi.petvita.pet.controller;
+package com.clinic.vet_clinic.pet.controller;
 
+import com.clinic.vet_clinic.pet.dto.PetRequestDTO;
+import com.clinic.vet_clinic.pet.dto.PetResponseDTO;
+import com.clinic.vet_clinic.pet.mapper.PetMapper;
+import com.clinic.vet_clinic.pet.model.PetModel;
+import com.clinic.vet_clinic.pet.repository.PetRepository;
+import com.clinic.vet_clinic.user.model.UserModel;
+import com.clinic.vet_clinic.user.repository.UserRepository;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import sesi.petvita.pet.dto.PetRequestDTO;
-import sesi.petvita.pet.dto.PetResponseDTO;
-import sesi.petvita.pet.mapper.PetMapper;
-import sesi.petvita.pet.model.PetModel;
-import sesi.petvita.pet.repository.PetRepository;
-import sesi.petvita.user.model.UserModel;
-import sesi.petvita.user.repository.UserRepository;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/pets")
+@Tag(name = "Pets", description = "Endpoints relacionados aos pets dos usuários")
 @RequiredArgsConstructor
-@Tag(name = "Pets", description = "Endpoints relacionados ao gerenciamento de pets")
 public class PetController {
 
     private final PetRepository petRepository;
-    private final PetMapper petMapper;
     private final UserRepository userRepository;
+    private final PetMapper petMapper;
 
-    @Operation(summary = "Cadastrar um novo pet")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Pet cadastrado com sucesso"),
-            @ApiResponse(responseCode = "400", description = "Dados inválidos")
-    })
-    @PostMapping
-    public ResponseEntity<PetResponseDTO> create(@RequestBody PetRequestDTO dto) {
-        PetModel pet = petMapper.toModel(dto);
-
-
-        UserModel usuario = userRepository.findById(dto.usuarioId())
-                .orElseThrow(() -> new RuntimeException("Usuário não encontrado com o ID: " + dto.usuarioId()));
-
-        pet.setUsuario(usuario); // Associa o UserModel ao PetModel
-
-        PetModel saved = petRepository.save(pet);
-        return ResponseEntity.ok(petMapper.toDTO(saved));
-    }
-
-
-    @Operation(summary = "Listar todos os pets")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Lista de pets retornada com sucesso"),
-            @ApiResponse(responseCode = "500", description = "Erro interno ao buscar pets")
-    })
     @GetMapping
-    public ResponseEntity<List<PetResponseDTO>> getAll() {
-        List<PetResponseDTO> pets = petRepository.findAll()
-                .stream()
+    @Operation(summary = "Listar todos os pets")
+    public ResponseEntity<List<PetResponseDTO>> getAllPets() {
+        List<PetModel> pets = petRepository.findAll();
+        List<PetResponseDTO> petDTOs = pets.stream()
                 .map(petMapper::toDTO)
                 .collect(Collectors.toList());
-        return ResponseEntity.ok(pets);
+        return ResponseEntity.ok(petDTOs);
     }
 
-    @Operation(summary = "Buscar pet por ID")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Pet encontrado"),
-            @ApiResponse(responseCode = "404", description = "Pet não encontrado")
-    })
     @GetMapping("/{id}")
-    public ResponseEntity<PetResponseDTO> getById(@PathVariable Long id) {
+    @Operation(summary = "Buscar pet por ID")
+    public ResponseEntity<PetResponseDTO> getPetById(@PathVariable Long id) {
         return petRepository.findById(id)
                 .map(petMapper::toDTO)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    @Operation(summary = "Atualizar pet por ID")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Pet atualizado com sucesso"),
-            @ApiResponse(responseCode = "404", description = "Pet não encontrado")
-    })
-    @PutMapping("/{id}")
-    public ResponseEntity<PetResponseDTO> update(@PathVariable Long id, @RequestBody PetRequestDTO dto) {
-        return petRepository.findById(id).map(existing -> {
-            PetModel updated = petMapper.toModel(dto);
-            updated.setId(existing.getId());
-            PetModel saved = petRepository.save(updated);
-            return ResponseEntity.ok(petMapper.toDTO(saved));
-        }).orElse(ResponseEntity.notFound().build());
+    @PostMapping
+    @Operation(summary = "Cadastrar um novo pet")
+    public ResponseEntity<?> createPet(@Valid @RequestBody PetRequestDTO petDto) {
+        // --- LÓGICA CORRIGIDA ---
+        // 1. Busca o usuário dono do pet
+        Optional<UserModel> ownerOptional = userRepository.findById(petDto.usuarioId());
+
+        // 2. Se o dono não for encontrado, retorna um erro 404
+        if (ownerOptional.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Usuário dono do pet não encontrado.");
+        }
+        UserModel owner = ownerOptional.get();
+        // --- FIM DA CORREÇÃO ---
+
+        PetModel pet = petMapper.toModel(petDto);
+        pet.setUsuario(owner);
+
+        try {
+            PetModel savedPet = petRepository.save(pet);
+            return ResponseEntity.status(HttpStatus.CREATED).body(petMapper.toDTO(savedPet));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Erro ao cadastrar pet: " + e.getMessage());
+        }
     }
 
-    @Operation(summary = "Deletar pet por ID")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "204", description = "Pet deletado com sucesso"),
-            @ApiResponse(responseCode = "404", description = "Pet não encontrado")
-    })
+    @PutMapping("/{id}")
+    @Operation(summary = "Atualizar pet pelo ID")
+    public ResponseEntity<?> updatePet(@PathVariable Long id, @Valid @RequestBody PetRequestDTO petDto) {
+        // --- LÓGICA CORRIGIDA ---
+        // 1. Busca o pet que será atualizado
+        Optional<PetModel> existingPetOptional = petRepository.findById(id);
+        if (existingPetOptional.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Pet não encontrado.");
+        }
+
+        // 2. Busca o novo dono (ou o mesmo) do pet
+        Optional<UserModel> newOwnerOptional = userRepository.findById(petDto.usuarioId());
+        if (newOwnerOptional.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Novo usuário dono do pet não encontrado.");
+        }
+        // --- FIM DA CORREÇÃO ---
+
+        PetModel existingPet = existingPetOptional.get();
+        UserModel newOwner = newOwnerOptional.get();
+
+        // Atualiza os campos do pet existente
+        existingPet.setUsuario(newOwner);
+        existingPet.setName(petDto.name());
+        existingPet.setAge(petDto.age());
+        existingPet.setImageurl(petDto.imageurl());
+        existingPet.setSpeciespet(petDto.speciespet());
+        // ... adicione outros campos para atualizar se necessário
+
+        try {
+            PetModel savedPet = petRepository.save(existingPet);
+            return ResponseEntity.ok(petMapper.toDTO(savedPet));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Erro ao atualizar pet: " + e.getMessage());
+        }
+    }
+
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable Long id) {
-        return petRepository.findById(id).map(pet -> {
-            petRepository.delete(pet);
-            return ResponseEntity.noContent().<Void>build();
-        }).orElse(ResponseEntity.notFound().build());
+    @Operation(summary = "Deletar pet pelo ID")
+    public ResponseEntity<String> deletePet(@PathVariable Long id) {
+        if (petRepository.existsById(id)) {
+            petRepository.deleteById(id);
+            return ResponseEntity.ok("Pet deletado com sucesso!");
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Pet não encontrado.");
+        }
     }
 }

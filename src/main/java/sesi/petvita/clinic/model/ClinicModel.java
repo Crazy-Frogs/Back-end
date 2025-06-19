@@ -1,11 +1,12 @@
-package sesi.petvita.clinic.model;
+package com.clinic.vet_clinic.clinic.model;
 
+import com.clinic.vet_clinic.clinic.careservices.CareServices;
+import com.clinic.vet_clinic.consultation.model.ConsultationModel;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import lombok.*;
-import sesi.petvita.clinic.careservices.CareServices;
-import sesi.petvita.consultation.model.ConsultationModel;
+
 
 import java.util.List;
 
@@ -54,4 +55,3 @@ public class ClinicModel {
 
 
 }
-

@@ -1,7 +1,6 @@
-package sesi.petvita.clinic.dto;
+package com.clinic.vet_clinic.clinic.dto;
 
-
-import sesi.petvita.clinic.careservices.CareServices;
+import com.clinic.vet_clinic.clinic.careservices.CareServices;
 
 public record ClinicResponseDTO(
         Long id,

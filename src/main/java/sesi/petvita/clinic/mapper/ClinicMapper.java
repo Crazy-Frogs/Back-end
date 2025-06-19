@@ -1,15 +1,14 @@
-package sesi.petvita.clinic.mapper;
+package com.clinic.vet_clinic.clinic.mapper;
 
-
+import com.clinic.vet_clinic.clinic.dto.ClinicRequestDTO; // Importe o novo DTO
+import com.clinic.vet_clinic.clinic.dto.ClinicResponseDTO;
+import com.clinic.vet_clinic.clinic.model.ClinicModel;
 import org.springframework.stereotype.Component;
-import sesi.petvita.clinic.dto.ClinicRequestDTO;
-import sesi.petvita.clinic.dto.ClinicResponseDTO;
-import sesi.petvita.clinic.model.ClinicModel;
 
 @Component
 public class ClinicMapper {
 
-
+    // Novo método para converter DTO de requisição para Entidade
     public ClinicModel toModel(ClinicRequestDTO requestDTO) {
         return ClinicModel.builder()
                 .name(requestDTO.name())

@@ -1,15 +1,17 @@
-package sesi.petvita.pet.mapper;
+package com.clinic.vet_clinic.pet.mapper;
 
-
+import com.clinic.vet_clinic.pet.dto.PetRequestDTO;
+import com.clinic.vet_clinic.pet.dto.PetResponseDTO;
+import com.clinic.vet_clinic.pet.model.PetModel;
 import org.springframework.stereotype.Component;
-import sesi.petvita.pet.dto.PetRequestDTO;
-import sesi.petvita.pet.dto.PetResponseDTO;
-import sesi.petvita.pet.model.PetModel;
 
 @Component
 public class PetMapper {
 
+
+
     public PetModel toModel(PetRequestDTO dto) {
+        // Este método não precisa de alteração
         return PetModel.builder()
                 .name(dto.name())
                 .imageurl(dto.imageurl())
@@ -29,6 +31,10 @@ public class PetMapper {
     }
 
     public PetResponseDTO toDTO(PetModel model) {
+        // Obtém o ID do usuário de forma segura, verificando se não é nulo
+        String ownerUsername = (model.getUsuario() != null) ? model.getUsuario().getUsername() : "N/A";
+        Long ownerId = (model.getUsuario() != null) ? model.getUsuario().getId() : null;
+
         return new PetResponseDTO(
                 model.getId(),
                 model.getName(),
@@ -44,8 +50,9 @@ public class PetMapper {
                 model.getFishBreed(),
                 model.getRabbitBreed(),
                 model.getReptileBreed(),
-                model.getRodentBreed()
-
+                model.getRodentBreed(),
+                ownerId, // <-- AQUI ESTÁ A CORREÇÃO: Adicionando o ID do dono
+                ownerUsername
         );
     }
 }

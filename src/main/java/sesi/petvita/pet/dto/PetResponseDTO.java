@@ -1,9 +1,10 @@
-package sesi.petvita.pet.dto;
+package com.clinic.vet_clinic.pet.dto;
 
+import com.clinic.vet_clinic.pet.breed.*;
+import com.clinic.vet_clinic.pet.gender.Gender;
+import com.clinic.vet_clinic.pet.species.Species;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import sesi.petvita.pet.breed.*;
-import sesi.petvita.pet.gender.Gender;
-import sesi.petvita.pet.species.Species;
+
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public record PetResponseDTO (
@@ -21,5 +22,7 @@ public record PetResponseDTO (
         FishBreed fishBreed,
         RabbitBreed rabbitBreed,
         ReptileBreed reptileBreed,
-        RodentBreed rodentBreed
+        RodentBreed rodentBreed,
+        Long usuarioId,
+        String usuarioUsername
 ){}
