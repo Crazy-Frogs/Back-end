@@ -1,4 +1,4 @@
-package com.clinic.vet_clinic.exception;
+package sesi.petvita.exception;
 
 public record ErrorResponse(String message) {
 }
