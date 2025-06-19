@@ -1,14 +1,15 @@
-package com.clinic.vet_clinic.report;
+package sesi.petvita.report;
 
-import com.clinic.vet_clinic.consultation.model.ConsultationModel; // Ajustado para ConsultationModel
-import com.clinic.vet_clinic.consultation.repository.ConsultationRepository; // Ajustado para ConsultationRepository
-import com.clinic.vet_clinic.veterinary.speciality.SpecialityEnum; // Certifique-se de importar o enum
+
 import com.itextpdf.text.*;
 import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import sesi.petvita.consultation.model.ConsultationModel;
+import sesi.petvita.consultation.repository.ConsultationRepository;
+import sesi.petvita.veterinary.speciality.SpecialityEnum;
 
 import java.io.ByteArrayOutputStream;
 import java.util.List;
@@ -20,8 +21,6 @@ public class ReportService {
     @Autowired
     private ConsultationRepository consultationRepository; // Ajustado para ConsultationRepository
 
-    // Remova os @Autowireds de PetRepository e VeterinaryRepository se você já os carrega no ConsultationModel via @ManyToOne(fetch = FetchType.EAGER)
-    // Se não, você precisará injetá-los e buscar os nomes dos pets/veterinários manualmente aqui.
 
     public byte[] generateConsultationReportPdf(
             Optional<Long> veterinarioId,
@@ -38,9 +37,6 @@ public class ReportService {
             Paragraph title = new Paragraph("Relatório de Consultas", fontTitle);
 
             if (veterinarioId.isPresent()) {
-                // Opcional: Buscar o nome do veterinário para exibir no título
-                // Ex: VeterinaryModel vet = veterinaryRepository.findById(veterinarioId.get()).orElse(null);
-                // if (vet != null) title.add(new Chunk("\n(Veterinário: " + vet.getName() + ")"));
                 title.add(new Chunk("\n(Veterinário ID: " + veterinarioId.get() + ")"));
             }
             if (speciality.isPresent()) {
@@ -67,9 +63,9 @@ public class ReportService {
             addTableHeader(table, "Veterinário", fontHeader, headerBgColor);
             addTableHeader(table, "Especialidade", fontHeader, headerBgColor);
 
-            List<ConsultationModel> consultations; // <-- Variável para armazenar as consultas filtradas
+            List<ConsultationModel> consultations;
 
-            // LÓGICA DE FILTRAGEM CRUCIAL AQUI!
+
             if (veterinarioId.isPresent() && speciality.isPresent()) {
                 consultations = consultationRepository.findByVeterinarioIdAndSpecialityEnum(veterinarioId.get(), speciality.get());
             } else if (veterinarioId.isPresent()) {
@@ -82,7 +78,7 @@ public class ReportService {
 
             Font fontCell = FontFactory.getFont(FontFactory.HELVETICA, 10, BaseColor.BLACK);
             for (ConsultationModel consultation : consultations) { // <-- Itere sobre a lista filtrada
-                // Certifique-se de que o Pet e o Veterinário sejam carregados (EAGER ou buscando manualmente)
+
                 String petName = consultation.getPet() != null ? consultation.getPet().getName() : "N/A";
                 String vetName = consultation.getVeterinario() != null ? consultation.getVeterinario().getName() : "N/A";
 
@@ -103,7 +99,6 @@ public class ReportService {
         }
     }
 
-    // Métodos auxiliares permanecem os mesmos
     private void addTableHeader(PdfPTable table, String headerText, Font font, BaseColor bgColor) {
         PdfPCell header = new PdfPCell();
         header.setBackgroundColor(bgColor);

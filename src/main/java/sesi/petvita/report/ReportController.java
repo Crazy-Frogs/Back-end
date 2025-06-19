@@ -1,7 +1,5 @@
-package com.clinic.vet_clinic.report;
+package sesi.petvita.report;
 
-
-import com.clinic.vet_clinic.veterinary.speciality.SpecialityEnum;
 import com.itextpdf.text.DocumentException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -12,8 +10,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import sesi.petvita.veterinary.speciality.SpecialityEnum;
 
-import java.util.Optional; // Importe Optional
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/reports")
@@ -25,7 +24,7 @@ public class ReportController {
     @GetMapping("/consultations-pdf")
     public ResponseEntity<byte[]> getConsultationsPdfReport(
             @RequestParam Optional<Long> veterinarioId,
-            @RequestParam Optional<SpecialityEnum> speciality) { // Note o @RequestParam e Optional
+            @RequestParam Optional<SpecialityEnum> speciality) {
 
         try {
             byte[] pdfBytes = reportService.generateConsultationReportPdf(veterinarioId, speciality);
@@ -39,8 +38,6 @@ public class ReportController {
 
         } catch (DocumentException e) {
             System.err.println("Erro ao gerar relatório PDF de consultas: " + e.getMessage());
-            // Idealmente, você logaria o erro completo para depuração:
-            // e.printStackTrace();
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
