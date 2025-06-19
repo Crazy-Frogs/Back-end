@@ -1,4 +1,4 @@
-package com.clinic.vet_clinic.pet.gender;
+package sesi.petvita.pet.gender;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;

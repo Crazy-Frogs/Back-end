@@ -1,4 +1,4 @@
-package com.clinic.vet_clinic.pet.species;
+package sesi.petvita.pet.species;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
