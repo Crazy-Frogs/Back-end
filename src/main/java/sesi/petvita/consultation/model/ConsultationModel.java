@@ -1,5 +1,6 @@
 package sesi.petvita.consultation.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
@@ -52,18 +53,22 @@ public class ConsultationModel {
         @Column(nullable = false)
         private String observations;
 
-        @ManyToOne
+        @JsonBackReference // <-- ADICIONE AQUI
+        @ManyToOne(fetch = FetchType.EAGER)
         @JoinColumn(name = "pet_id")
         private PetModel pet;
 
+        @JsonBackReference // <-- ADICIONE AQUI
         @ManyToOne
         @JoinColumn(name = "usuario_id")
         private UserModel usuario;
 
-        @ManyToOne
+
+        @ManyToOne(fetch = FetchType.EAGER)
         @JoinColumn(name = "veterinario_id")
         private VeterinaryModel veterinario;
 
+        @JsonBackReference
         @ManyToOne
         @JoinColumn(name = "clinica_id")
         private ClinicModel clinica;
@@ -74,14 +79,15 @@ public class ConsultationModel {
 
         @PrePersist
         public void prePersist() {
-            this.dataCriacao = LocalDateTime.now();
+                this.dataCriacao = LocalDateTime.now();
         }
 
         @PreUpdate
         public void preUpdate() {
-            this.dataAtualizacao = LocalDateTime.now();
+                this.dataAtualizacao = LocalDateTime.now();
         }
 
 
-    }
+}
+
 

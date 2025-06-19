@@ -1,5 +1,7 @@
 package sesi.petvita.pet.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
@@ -7,6 +9,7 @@ import jakarta.validation.constraints.Size;
 import lombok.*;
 import sesi.petvita.consultation.model.ConsultationModel;
 import sesi.petvita.pet.breed.*;
+import sesi.petvita.pet.dto.PetRequestDTO;
 import sesi.petvita.pet.gender.Gender;
 import sesi.petvita.pet.species.Species;
 import sesi.petvita.user.model.UserModel;
@@ -74,16 +77,31 @@ public class PetModel {
     @Enumerated(EnumType.STRING)
     private RodentBreed rodentBreed;
 
+    @JsonManagedReference
     @OneToMany(mappedBy = "pet", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ConsultationModel> consultas;
 
+    @JsonBackReference
     @ManyToOne
     @JoinColumn(name = "usuario_id", nullable = false)
     private UserModel usuario;
 
 
+    public PetModel(PetRequestDTO dto) {
+        this.name = dto.name();
+        this.age = dto.age();
+        this.imageurl = dto.imageurl();
+        this.speciespet = dto.speciespet();
+        this.personalizatedSpecies = dto.personalizatedSpecies();
+        this.gender = dto.gender();
+        this.dogBreed = dto.dogBreed();
+        this.catBreed = dto.catBreed();
+        this.birdBreed = dto.birdBreed();
+        this.fishBreed = dto.fishBreed();
+        this.rabbitBreed = dto.rabbitBreed();
+        this.reptileBreed = dto.reptileBreed();
+        this.rodentBreed = dto.rodentBreed();
+        this.personalizedBreed = dto.personalizedBreed();
+    }
 
 }
-
-
-
