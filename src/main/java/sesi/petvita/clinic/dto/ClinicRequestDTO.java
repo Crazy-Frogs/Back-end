@@ -1,10 +1,11 @@
-package com.clinic.vet_clinic.clinic.dto;
+package sesi.petvita.clinic.dto;
 
-import com.clinic.vet_clinic.clinic.careservices.CareServices;
+
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
+import sesi.petvita.clinic.careservices.CareServices;
 
 public record ClinicRequestDTO(
         @NotBlank @Size(min = 3, max = 50)
