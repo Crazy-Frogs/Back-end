@@ -1,14 +1,14 @@
-package com.clinic.vet_clinic.user.mapper;
+package sesi.petvita.user.mapper;
 
-import com.clinic.vet_clinic.user.dto.UserRequestDTO;
-import com.clinic.vet_clinic.user.dto.UserResponseDTO;
-import com.clinic.vet_clinic.user.model.UserModel;
+
 import org.springframework.stereotype.Component;
+import sesi.petvita.user.dto.UserRequestDTO;
+import sesi.petvita.user.dto.UserResponseDTO;
+import sesi.petvita.user.model.UserModel;
 
 @Component
 public class UserMapper {
 
-    // NOVO MÉTODO: Converte o DTO de requisição para a entidade do banco
     public UserModel toModel(UserRequestDTO dto) {
         return UserModel.builder()
                 .username(dto.username())
@@ -21,7 +21,6 @@ public class UserMapper {
                 .build();
     }
 
-    // Este método já existia e está correto
     public UserResponseDTO toDTO(UserModel model) {
         return new UserResponseDTO(
                 model.getId(),

@@ -1,6 +1,7 @@
-package com.clinic.vet_clinic.user.dto;
+package sesi.petvita.user.dto;
 
-import com.clinic.vet_clinic.user.role.UserRole;
+
+import sesi.petvita.user.role.UserRole;
 
 public record UserResponseDTO(
         Long id,
