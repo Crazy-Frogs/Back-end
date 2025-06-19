@@ -1,14 +1,14 @@
-package com.clinic.vet_clinic.veterinary.mapper;
+package sesi.petvita.veterinary.mapper;
 
-import com.clinic.vet_clinic.veterinary.dto.VeterinaryRequestDTO;
-import com.clinic.vet_clinic.veterinary.dto.VeterinaryResponseDTO;
-import com.clinic.vet_clinic.veterinary.model.VeterinaryModel;
+
 import org.springframework.stereotype.Component;
+import sesi.petvita.veterinary.dto.VeterinaryRequestDTO;
+import sesi.petvita.veterinary.dto.VeterinaryResponseDTO;
+import sesi.petvita.veterinary.model.VeterinaryModel;
 
 @Component
 public class VeterinaryMapper {
 
-    // NOVO MÉTODO PARA CONVERTER O REQUEST DTO EM ENTIDADE
     public VeterinaryModel toModel(VeterinaryRequestDTO requestDTO) {
         return VeterinaryModel.builder()
                 .name(requestDTO.name())

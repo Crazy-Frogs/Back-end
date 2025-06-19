@@ -1,16 +1,16 @@
-package com.clinic.vet_clinic.veterinary.dto;
+package sesi.petvita.veterinary.dto;
 
-import com.clinic.vet_clinic.veterinary.speciality.SpecialityEnum;
+
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
+import sesi.petvita.veterinary.speciality.SpecialityEnum;
 
 public record VeterinaryRequestDTO(
         @NotBlank @Size(min = 3, max = 50)
         String name,
 
-        // A senha é opcional na atualização, então não a marcamos como @NotBlank aqui
         String password,
 
         @Email @NotBlank @Size(max = 100)
