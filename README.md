@@ -1,5 +1,11 @@
 # 🚀 Back-end
 
+![GitHub repo size](https://img.shields.io/github/repo-size/02-Bits/Back-end?style=for-the-badge)
+![GitHub language count](https://img.shields.io/github/languages/count/02-Bits/Back-end?style=for-the-badge)
+![GitHub forks](https://img.shields.io/github/forks/02-Bits/Back-end?style=for-the-badge)
+![GitHub issues](https://img.shields.io/github/issues/02-Bits/Back-end?style=for-the-badge)
+![GitHub pull requests](https://img.shields.io/github/issues-pr/02-Bits/Back-end?style=for-the-badge)
+
 O repositório do **Back-end** é dedicado ao desenvolvimento e aprimoramento da API principal do nosso projeto. Aqui você encontrará a estrutura do servidor, a integração com o banco de dados e todos os endpoints necessários para a comunicação com o frontend.
 
 ---
