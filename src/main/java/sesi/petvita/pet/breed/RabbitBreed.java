@@ -35,5 +35,5 @@ public enum RabbitBreed {
     @Schema(description = "Outro")
     OUTRO("Outro");
 
-    private final String reptilerace;
+    private final String rabbitrace;
 }
