@@ -1,6 +1,5 @@
 package sesi.petvita.clinic.controller;
 
-
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -10,73 +9,49 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import sesi.petvita.clinic.dto.ClinicRequestDTO;
 import sesi.petvita.clinic.dto.ClinicResponseDTO;
-import sesi.petvita.clinic.mapper.ClinicMapper;
-import sesi.petvita.clinic.model.ClinicModel;
-import sesi.petvita.clinic.repository.ClinicRepository;
+import sesi.petvita.clinic.service.ClinicService; // Importa o novo service
 
 import java.util.List;
-import java.util.stream.Collectors;
 
+// ARQUIVO MODIFICADO
 @RestController
 @RequestMapping("/clinic")
 @Tag(name = "Clinicas", description = "Endpoints relacionados ao cadastro de clinicas")
 @RequiredArgsConstructor
 public class ClinicController {
 
-    private final ClinicRepository clinicRepository;
-    private final ClinicMapper clinicMapper;
+    private final ClinicService clinicService; // Injeta o novo ClinicService
 
     @GetMapping
+    @Operation(summary = "Listar todas as clínicas")
     public ResponseEntity<List<ClinicResponseDTO>> getAllClinic() {
-        List<ClinicModel> clinics = clinicRepository.findAll();
-        List<ClinicResponseDTO> clinicDTOs = clinics.stream()
-                .map(clinicMapper::toDTO)
-                .collect(Collectors.toList());
-        return ResponseEntity.ok(clinicDTOs);
+        return ResponseEntity.ok(clinicService.findAll());
     }
 
     @GetMapping("/{id}")
+    @Operation(summary = "Buscar clínica por ID")
     public ResponseEntity<ClinicResponseDTO> getClinicById(@PathVariable Long id) {
-        return clinicRepository.findById(id)
-                .map(clinicMapper::toDTO)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+        return ResponseEntity.ok(clinicService.findById(id));
     }
 
     @PostMapping
-    @Operation(summary = "Adicionar Clinicas")
+    @Operation(summary = "Adicionar uma nova clínica")
     public ResponseEntity<ClinicResponseDTO> addClinic(@Valid @RequestBody ClinicRequestDTO clinicRequest) {
-        ClinicModel newClinic = clinicMapper.toModel(clinicRequest);
-        ClinicModel savedClinic = clinicRepository.save(newClinic);
-        return ResponseEntity.status(HttpStatus.CREATED).body(clinicMapper.toDTO(savedClinic));
+        ClinicResponseDTO createdClinic = clinicService.addClinic(clinicRequest);
+        return ResponseEntity.status(HttpStatus.CREATED).body(createdClinic);
     }
 
     @PutMapping("/{id}")
-    @Operation(summary = "Alterar clinica pelo ID")
+    @Operation(summary = "Alterar clínica pelo ID")
     public ResponseEntity<ClinicResponseDTO> updateClinic(@PathVariable Long id, @Valid @RequestBody ClinicRequestDTO clinicRequest) {
-        return clinicRepository.findById(id)
-                .map(existingClinic -> {
-                    existingClinic.setName(clinicRequest.name());
-                    existingClinic.setEmail(clinicRequest.email());
-                    existingClinic.setPhone(clinicRequest.phone());
-                    existingClinic.setAddress(clinicRequest.address());
-                    existingClinic.setCareServices(clinicRequest.careServices());
-                    existingClinic.setImageurl(clinicRequest.imageurl());
-
-                    ClinicModel updatedClinic = clinicRepository.save(existingClinic);
-                    return ResponseEntity.ok(clinicMapper.toDTO(updatedClinic));
-                })
-                .orElse(ResponseEntity.notFound().build());
+        ClinicResponseDTO updatedClinic = clinicService.updateClinic(id, clinicRequest);
+        return ResponseEntity.ok(updatedClinic);
     }
 
     @DeleteMapping("/{id}")
-    @Operation(summary = "Deletar clinica pelo ID")
-    public ResponseEntity<Object> deleteClinic(@PathVariable Long id) {
-        return clinicRepository.findById(id)
-                .map(existing -> {
-                    clinicRepository.delete(existing);
-                    return ResponseEntity.noContent().build();
-                })
-                .orElse(ResponseEntity.notFound().build());
+    @Operation(summary = "Deletar clínica pelo ID")
+    public ResponseEntity<Void> deleteClinic(@PathVariable Long id) {
+        clinicService.deleteClinic(id);
+        return ResponseEntity.noContent().build(); // Padronizado para HTTP 204
     }
 }
