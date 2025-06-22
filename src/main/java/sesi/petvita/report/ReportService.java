@@ -5,6 +5,7 @@ import com.itextpdf.text.*;
 import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import sesi.petvita.consultation.model.ConsultationModel;
@@ -15,11 +16,11 @@ import java.io.ByteArrayOutputStream;
 import java.util.List;
 import java.util.Optional;
 
+@RequiredArgsConstructor
 @Service
 public class ReportService {
 
-    @Autowired
-    private ConsultationRepository consultationRepository; // Ajustado para ConsultationRepository
+    private final ConsultationRepository consultationRepository;
 
 
     public byte[] generateConsultationReportPdf(

@@ -1,6 +1,7 @@
 package sesi.petvita.report;
 
 import com.itextpdf.text.DocumentException;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -16,10 +17,11 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/reports")
+@RequiredArgsConstructor // Adicionado
 public class ReportController {
 
-    @Autowired
-    private ReportService reportService;
+
+    private final ReportService reportService;
 
     @GetMapping("/consultations-pdf")
     public ResponseEntity<byte[]> getConsultationsPdfReport(
