@@ -1,129 +1,67 @@
-package sesi.petvita.user.controller; // Ajuste o pacote conforme sua estrutura
+package sesi.petvita.user.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.web.bind.annotation.*;
 import org.springframework.security.core.Authentication;
+import org.springframework.web.bind.annotation.*;
 import sesi.petvita.user.dto.UserRequestDTO;
 import sesi.petvita.user.dto.UserResponseDTO;
-import sesi.petvita.user.mapper.UserMapper;
+import sesi.petvita.user.dto.UserUpdateRequestDTO;
 import sesi.petvita.user.model.UserModel;
-import sesi.petvita.user.repository.UserRepository;
-import sesi.petvita.user.role.UserRole;
+import sesi.petvita.user.service.UserService;
 
 import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
-
+// ARQUIVO MODIFICADO
 @RestController
 @RequestMapping("/users")
 @RequiredArgsConstructor
 public class UserController {
 
-    private final UserRepository userRepository;
-    private final PasswordEncoder passwordEncoder;
-    private final UserMapper userMapper;
+    private final UserService userService; // Injeta o Service
 
     @GetMapping
-    @Operation(summary = "Listar todos os usuários")
+    @Operation(summary = "Listar todos os usuários (Apenas Admin)")
     public ResponseEntity<List<UserResponseDTO>> getAllUsers() {
-        List<UserModel> users = userRepository.findAll();
-        List<UserResponseDTO> userDTOs = users.stream()
-                .map(userMapper::toDTO)
-                .collect(Collectors.toList());
-        return ResponseEntity.ok(userDTOs);
+        return ResponseEntity.ok(userService.findAllUsers());
     }
 
     @GetMapping("/{id}")
-    @Operation(summary = "Buscar usuário por ID")
-    public ResponseEntity<UserModel> getUserById(@PathVariable Long id) {
-        Optional<UserModel> user = userRepository.findById(id);
-        return user.map(ResponseEntity::ok)
-                .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).build());
+    @Operation(summary = "Buscar usuário por ID (Apenas Admin)")
+    public ResponseEntity<UserResponseDTO> getUserById(@PathVariable Long id) {
+        return ResponseEntity.ok(userService.findUserById(id));
     }
 
     @GetMapping("/me")
     @Operation(summary = "Verificar dados do usuário logado")
     public ResponseEntity<Object> getCurrentUser(Authentication authentication) {
+        // O principal pode ser a sua entidade UserModel, então isso continua funcionando
         return ResponseEntity.ok(authentication.getPrincipal());
     }
 
-
     @PostMapping("/register")
-    public ResponseEntity<?> registerUser(@Valid @RequestBody UserRequestDTO requestDTO) { // <-- MUDANÇA AQUI
-        try {
-
-            UserModel user = userMapper.toModel(requestDTO);
-
-
-            user.setRole(UserRole.USER);
-
-            user.setPassword(passwordEncoder.encode(requestDTO.password()));
-
-            UserModel savedUser = userRepository.save(user);
-
-            return ResponseEntity.status(HttpStatus.CREATED).body(userMapper.toDTO(savedUser));
-        } catch (Exception e) {
-
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body("Erro ao registrar usuário: " + e.getMessage());
-        }
+    @Operation(summary = "Registrar um novo usuário")
+    public ResponseEntity<UserResponseDTO> registerUser(@Valid @RequestBody UserRequestDTO requestDTO) {
+        UserResponseDTO registeredUser = userService.registerUser(requestDTO);
+        return ResponseEntity.status(HttpStatus.CREATED).body(registeredUser);
     }
 
     @PutMapping("/{id}")
-    @Operation(summary = "Atualizar usuário pelo ID recebendo a URL da imagem")
-    public ResponseEntity<?> updateUser(
+    @Operation(summary = "Atualizar usuário pelo ID")
+    public ResponseEntity<UserResponseDTO> updateUser(
             @PathVariable Long id,
-            @RequestBody @Valid UserModel updatedUser) { // Agora recebe @RequestBody
-
-        Optional<UserModel> existingUserOptional = userRepository.findById(id);
-
-        if (existingUserOptional.isPresent()) {
-            UserModel existingUser = existingUserOptional.get();
-
-
-            existingUser.setUsername(updatedUser.getUsername());
-            existingUser.setEmail(updatedUser.getEmail());
-            existingUser.setPhone(updatedUser.getPhone());
-            existingUser.setAddress(updatedUser.getAddress());
-            existingUser.setRg(updatedUser.getRg());
-            existingUser.setImageurl(updatedUser.getImageurl()); // Atualiza ou define como nulo
-
-            if (updatedUser.getPassword() != null && !updatedUser.getPassword().isEmpty()) {
-                existingUser.setPassword(passwordEncoder.encode(updatedUser.getPassword()));
-            }
-
-            try {
-                UserModel savedUser = userRepository.save(existingUser);
-                return ResponseEntity.ok(savedUser);
-
-            } catch (Exception e) {
-                e.printStackTrace(); // Para depuração
-                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                        .body("Erro ao atualizar usuário: " + e.getMessage());
-            }
-
-        } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Usuário não encontrado.");
-        }
+            @RequestBody @Valid UserUpdateRequestDTO requestDTO) { // Usa o novo DTO seguro
+        UserResponseDTO updatedUser = userService.updateUser(id, requestDTO);
+        return ResponseEntity.ok(updatedUser);
     }
 
-
     @DeleteMapping("/{id}")
-    @Operation(summary = "Deletar usuário pelo ID")
-    public ResponseEntity<String> deleteUser(@PathVariable Long id) {
-        if (userRepository.existsById(id)) {
-            userRepository.deleteById(id);
-            return ResponseEntity.ok("Usuário deletado com sucesso!");
-        } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Usuário não encontrado.");
-        }
+    @Operation(summary = "Deletar usuário pelo ID (Apenas Admin)")
+    public ResponseEntity<Void> deleteUser(@PathVariable Long id) { // Padronizado para ResponseEntity<Void>
+        userService.deleteUser(id);
+        return ResponseEntity.noContent().build(); // Retorna HTTP 204 No Content
     }
 }
