@@ -33,7 +33,6 @@ public class SecurityConfig {
     private final JwtAuthenticationFilter jwtAuthFilter;
     private final UserDetailsService userDetailsService;
 
-
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
@@ -43,23 +42,31 @@ public class SecurityConfig {
                         // 1. Endpoints Públicos (não exigem login)
                         .requestMatchers("/auth/**", "/users/register", "/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
 
-                        // 2. Endpoints para Usuários Autenticados (USER e ADMIN)
-                        .requestMatchers(HttpMethod.GET, "/clinic/**").authenticated()       // Usuários podem VER clínicas e detalhes
-                        .requestMatchers(HttpMethod.GET, "/veterinary/**").authenticated()  // << CORREÇÃO PRINCIPAL: Usuários podem VER veterinários
-                        .requestMatchers(HttpMethod.GET, "/consultas/my-consultations").authenticated() // Usuários podem VER suas consultas
-                        .requestMatchers(HttpMethod.POST, "/consultas").authenticated()      // Usuários podem CRIAR consultas
-                        .requestMatchers("/pets/**").authenticated()                         // Usuários podem gerenciar seus próprios pets
+                        // 2. Endpoints de Usuário (USER)
+                        .requestMatchers(HttpMethod.POST, "/consultas").hasRole("USER")
+                        .requestMatchers(HttpMethod.POST, "/veterinary/{id}/rate").hasRole("USER")
+                        .requestMatchers("/pets/**").hasRole("USER")
+                        .requestMatchers("/chat/consultation/**").hasRole("USER") // Para o usuário ver e enviar mensagens
+                        .requestMatchers("/notifications/**").hasRole("USER") // Para o usuário ver suas notificações
 
-                        // 3. Endpoints Exclusivos para ADMIN
-                        // (Qualquer outra ação em /clinic, /veterinary, /consultas que não seja as permitidas acima)
-                        .requestMatchers("/clinic/**").hasRole("ADMIN")
-                        .requestMatchers("/veterinary/**").hasRole("ADMIN")
-                        .requestMatchers("/consultas/**").hasRole("ADMIN")
+                        // 3. Endpoints de Veterinário (VETERINARY)
+                        .requestMatchers("/consultas/{id}/accept", "/consultas/{id}/reject", "/consultas/{id}/cancel", "/consultas/{id}/finalize").hasRole("VETERINARY")
+                        .requestMatchers(HttpMethod.PUT, "/consultas/{id}/report").hasRole("VETERINARY")
+                        .requestMatchers(HttpMethod.GET, "/veterinary/me/monthly-report").hasRole("VETERINARY")
+                        .requestMatchers("/chat/veterinary/**").hasRole("VETERINARY") // Para o veterinário ver e enviar mensagens
 
-                        // Outras áreas de admin
-                        .requestMatchers("/users/**", "/reports/**").hasRole("ADMIN")
+                        // 4. Endpoints de Admin (ADMIN)
+                        .requestMatchers("/admin/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.POST, "/veterinary").hasRole("ADMIN") // Apenas admin pode criar veterinários
+                        .requestMatchers(HttpMethod.PUT, "/veterinary/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/veterinary/**").hasRole("ADMIN")
+                        .requestMatchers("/users/**").hasRole("ADMIN")
 
-                        // 4. Regra Final: Qualquer outra requisição deve estar autenticada
+                        // 5. Endpoints Autenticados (Qualquer um logado pode ver)
+                        .requestMatchers(HttpMethod.GET, "/veterinary/**").authenticated() // Todos podem ver a lista de vets
+                        .requestMatchers(HttpMethod.GET, "/consultas/**").authenticated() // Todos podem ver suas próprias consultas
+
+                        // 6. Regra Final: Qualquer outra requisição deve estar autenticada
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
@@ -73,8 +80,7 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowedOrigins(List.of(
-                "http://localhost:3000", // Para continuar funcionando no seu computador
-                "https://vet-clinic-api-front.vercel.app" // SUA URL DE PRODUÇÃO
+                "http://localhost:3000"
         ));
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(List.of("*"));
