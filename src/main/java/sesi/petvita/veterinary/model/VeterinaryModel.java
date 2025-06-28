@@ -8,6 +8,7 @@ import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.*;
 import sesi.petvita.consultation.model.ConsultationModel;
+import sesi.petvita.user.model.UserModel;
 import sesi.petvita.veterinary.speciality.SpecialityEnum;
 
 
@@ -56,6 +57,11 @@ public class VeterinaryModel {
     @Column(unique = true, nullable = false)
     private String phone;
 
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_account_id")
+    private UserModel userAccount;
+
+
 
     @NotBlank
     @Column(nullable = false)
@@ -64,5 +70,12 @@ public class VeterinaryModel {
     @OneToMany(mappedBy = "veterinario")
     private List<ConsultationModel> consultas;
 
+    @Builder.Default
+    private Double averageRating = 0.0;
 
+    @Builder.Default
+    private Integer ratingCount = 0;
+
+    @OneToMany(mappedBy = "veterinary", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<VeterinaryRating> ratings;
 }

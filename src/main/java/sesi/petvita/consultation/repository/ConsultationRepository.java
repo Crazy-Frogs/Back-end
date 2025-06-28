@@ -3,6 +3,9 @@ package sesi.petvita.consultation.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import sesi.petvita.consultation.model.ConsultationModel;
+import sesi.petvita.consultation.status.ConsultationStatus;
+import sesi.petvita.user.model.UserModel;
+import sesi.petvita.veterinary.model.VeterinaryModel;
 import sesi.petvita.veterinary.speciality.SpecialityEnum;
 
 import java.time.LocalDate;
@@ -10,6 +13,14 @@ import java.time.LocalTime;
 import java.util.List;
 
 public interface ConsultationRepository extends JpaRepository<ConsultationModel, Long> {
+
+    List<ConsultationModel> findByVeterinarioAndConsultationdateBetween(VeterinaryModel vet, LocalDate startDate, LocalDate endDate);
+
+    List<ConsultationModel> findByUsuarioAndConsultationdateBetween(UserModel user, LocalDate startDate, LocalDate endDate);
+
+    List<ConsultationModel> findByConsultationdateBetween(LocalDate startDate, LocalDate endDate);
+
+    List<ConsultationModel> findAllByConsultationdateAndStatus(LocalDate date, ConsultationStatus status);
 
     List<ConsultationModel> findByUsuarioId(Long usuarioId);
 

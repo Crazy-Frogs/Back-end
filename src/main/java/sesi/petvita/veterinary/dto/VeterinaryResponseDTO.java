@@ -1,6 +1,5 @@
 package sesi.petvita.veterinary.dto;
 
-
 import sesi.petvita.veterinary.speciality.SpecialityEnum;
 
 public record VeterinaryResponseDTO(
@@ -10,5 +9,7 @@ public record VeterinaryResponseDTO(
         String crmv,
         SpecialityEnum specialityenum,
         String phone,
-        String imageurl
+        String imageurl,
+        Double averageRating, // NOVO CAMPO
+        Integer ratingCount   // NOVO CAMPO
 ) {}

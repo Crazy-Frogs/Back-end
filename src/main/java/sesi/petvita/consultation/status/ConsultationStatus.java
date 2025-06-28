@@ -4,22 +4,21 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
+
 @Getter
 @RequiredArgsConstructor
 @Schema(description = "Status da Consulta")
 public enum ConsultationStatus {
-
-    @Schema(description = "Consulta Agendada")
+    @Schema(description = "Consulta solicitada pelo usuário, aguardando aprovação do médico")
+    PENDENTE("Pendente"),
+    @Schema(description = "Consulta confirmada pelo médico")
     AGENDADA("Agendada"),
-
-    @Schema(description = "Consulta Reagendada")
-    REAGENDADA("Reagendada"),
-
-    @Schema(description = "Consulta Finalizada")
+    @Schema(description = "Consulta foi finalizada e o relatório pode ser preenchido")
     FINALIZADA("Finalizada"),
-
-    @Schema(description = "Consulta Cancelada")
-    CANCELADA("Cancelada");
+    @Schema(description = "Consulta foi cancelada pelo médico ou usuário")
+    CANCELADA("Cancelada"),
+    @Schema(description = "Consulta foi recusada pelo médico")
+    RECUSADA("Recusada");
 
     private final String descricao;
 }

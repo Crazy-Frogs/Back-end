@@ -12,6 +12,7 @@ import sesi.petvita.consultation.model.ConsultationModel;
 import sesi.petvita.pet.breed.*;
 import sesi.petvita.pet.dto.PetRequestDTO;
 import sesi.petvita.pet.gender.Gender;
+import sesi.petvita.pet.species.Porte;
 import sesi.petvita.pet.species.Species;
 import sesi.petvita.user.model.UserModel;
 
@@ -49,6 +50,10 @@ public class PetModel {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private Species speciespet;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private Porte porte;
 
     @NotBlank
     @Column(nullable = false)

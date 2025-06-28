@@ -29,7 +29,9 @@ public class VeterinaryMapper {
                 model.getCrmv(),
                 model.getSpecialityenum(),
                 model.getPhone(),
-                model.getImageurl()
+                model.getImageurl(),
+                model.getAverageRating(),
+                model.getRatingCount()
         );
     }
 }

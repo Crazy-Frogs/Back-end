@@ -48,8 +48,5 @@ public record ConsultationRequestDTO(
         Long usuarioId,
 
         @NotNull
-        Long veterinarioId,
-
-        @NotNull
-        Long clinicaId
+        Long veterinarioId
 ) {}

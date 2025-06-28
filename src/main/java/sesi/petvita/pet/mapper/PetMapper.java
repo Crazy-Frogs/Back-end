@@ -19,6 +19,7 @@ public class PetMapper {
                 .personalizatedSpecies(dto.personalizatedSpecies())
                 .personalizedBreed(dto.personalizedBreed())
                 .speciespet(dto.speciespet())
+                .porte(dto.porte())
                 .gender(dto.gender())
                 .birdBreed(dto.birdBreed())
                 .catBreed(dto.catBreed())
@@ -42,6 +43,7 @@ public class PetMapper {
                 model.getPersonalizatedSpecies(),
                 model.getPersonalizedBreed(),
                 model.getSpeciespet(),
+                model.getPorte(),
                 model.getGender(),
                 model.getBirdBreed(),
                 model.getCatBreed(),

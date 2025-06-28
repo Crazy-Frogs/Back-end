@@ -1,99 +1,83 @@
 package sesi.petvita.veterinary.controller;
 
-
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import sesi.petvita.user.model.UserModel;
+import sesi.petvita.veterinary.dto.VeterinarianMonthlyReportDTO;
+import sesi.petvita.veterinary.dto.VeterinaryRatingRequestDTO;
 import sesi.petvita.veterinary.dto.VeterinaryRequestDTO;
 import sesi.petvita.veterinary.dto.VeterinaryResponseDTO;
-import sesi.petvita.veterinary.mapper.VeterinaryMapper;
-import sesi.petvita.veterinary.model.VeterinaryModel;
-import sesi.petvita.veterinary.repository.VeterinaryRepository;
+import sesi.petvita.veterinary.service.VeterinaryService;
+import sesi.petvita.veterinary.speciality.SpecialityEnum;
 
 import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/veterinary")
-@Tag(name = "Veterinários", description = "Endpoints relacionados aos veterinários da clínica")
-@RequiredArgsConstructor // <-- 1. ADICIONE ESTA ANOTAÇÃO NA CLASSE
+@Tag(name = "Veterinários", description = "Endpoints para visualização e gerenciamento de veterinários")
+@RequiredArgsConstructor
 public class VeterinaryController {
 
-    private final VeterinaryRepository veterinaryRepository;
-    private final VeterinaryMapper veterinaryMapper;
-    private final PasswordEncoder passwordEncoder;
+    private final VeterinaryService veterinaryService;
+
+    @PostMapping
+    @Operation(summary = "[ADMIN] Cadastrar um novo veterinário")
+    public ResponseEntity<VeterinaryResponseDTO> createVeterinary(@Valid @RequestBody VeterinaryRequestDTO requestDTO) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(veterinaryService.createVeterinary(requestDTO));
+    }
 
     @GetMapping
-    @Operation(summary = "Listar todos os veterinários")
+    @Operation(summary = "[TODOS] Listar todos os veterinários")
     public ResponseEntity<List<VeterinaryResponseDTO>> getAllVeterinaries() {
-        List<VeterinaryModel> veterinaries = veterinaryRepository.findAll();
-        List<VeterinaryResponseDTO> dtoList = veterinaries.stream()
-                .map(veterinaryMapper::toDTO)
-                .collect(Collectors.toList());
-        return ResponseEntity.ok(dtoList);
+        return ResponseEntity.ok(veterinaryService.findAll());
+    }
+
+    @GetMapping("/search")
+    @Operation(summary = "[TODOS] Buscar veterinários por nome e/ou especialidade")
+    public ResponseEntity<List<VeterinaryResponseDTO>> searchVeterinarians(
+            @RequestParam(required = false) String name,
+            @RequestParam(required = false) SpecialityEnum speciality) {
+        return ResponseEntity.ok(veterinaryService.searchVeterinarians(name, speciality));
     }
 
     @GetMapping("/{id}")
-    @Operation(summary = "Buscar veterinário por ID")
+    @Operation(summary = "[TODOS] Buscar veterinário por ID")
     public ResponseEntity<VeterinaryResponseDTO> getVeterinaryById(@PathVariable Long id) {
-        return veterinaryRepository.findById(id)
-                .map(veterinaryMapper::toDTO)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
-    }
-
-    @PostMapping
-    @Operation(summary = "Cadastrar um novo veterinário")
-    public ResponseEntity<VeterinaryResponseDTO> createVeterinary(@Valid @RequestBody VeterinaryRequestDTO requestDTO) {
-        // Converte o DTO de requisição para a entidade do banco
-        VeterinaryModel newVeterinary = veterinaryMapper.toModel(requestDTO);
-        // Codifica a senha antes de salvar
-        newVeterinary.setPassword(passwordEncoder.encode(requestDTO.password()));
-
-        VeterinaryModel savedVeterinary = veterinaryRepository.save(newVeterinary);
-        // Retorna o DTO de resposta, que é seguro
-        return ResponseEntity.status(HttpStatus.CREATED).body(veterinaryMapper.toDTO(savedVeterinary));
+        return ResponseEntity.ok(veterinaryService.findById(id));
     }
 
     @PutMapping("/{id}")
-    @Operation(summary = "Atualizar veterinário pelo ID")
+    @Operation(summary = "[ADMIN] Atualizar veterinário pelo ID")
     public ResponseEntity<VeterinaryResponseDTO> updateVeterinary(@PathVariable Long id, @Valid @RequestBody VeterinaryRequestDTO requestDTO) {
-        return veterinaryRepository.findById(id)
-                .map(existingVeterinary -> {
-                    // Atualiza os campos da entidade existente com os dados do DTO
-                    existingVeterinary.setName(requestDTO.name());
-                    existingVeterinary.setEmail(requestDTO.email());
-                    existingVeterinary.setCrmv(requestDTO.crmv());
-                    existingVeterinary.setSpecialityenum(requestDTO.specialityenum());
-                    existingVeterinary.setPhone(requestDTO.phone());
-                    existingVeterinary.setImageurl(requestDTO.imageurl());
-
-                    // Atualiza a senha apenas se uma nova for fornecida
-                    if (requestDTO.password() != null && !requestDTO.password().isEmpty()) {
-                        existingVeterinary.setPassword(passwordEncoder.encode(requestDTO.password()));
-                    }
-
-                    VeterinaryModel updatedVeterinary = veterinaryRepository.save(existingVeterinary);
-                    // Retorna o DTO de resposta
-                    return ResponseEntity.ok(veterinaryMapper.toDTO(updatedVeterinary));
-                })
-                .orElse(ResponseEntity.notFound().build());
+        return ResponseEntity.ok(veterinaryService.updateVeterinary(id, requestDTO));
     }
 
     @DeleteMapping("/{id}")
-    @Operation(summary = "Deletar veterinário pelo ID")
-    public ResponseEntity<String> deleteVeterinary(@PathVariable Long id) {
-        if (veterinaryRepository.existsById(id)) {
-            veterinaryRepository.deleteById(id);
-            return ResponseEntity.ok("Veterinário deletado com sucesso!");
-        } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Veterinário não encontrado.");
-        }
+    @Operation(summary = "[ADMIN] Deletar veterinário pelo ID")
+    public ResponseEntity<Void> deleteVeterinary(@PathVariable Long id) {
+        veterinaryService.deleteVeterinary(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/{id}/rate")
+    @Operation(summary = "[USER] Adicionar uma avaliação a um veterinário")
+    public ResponseEntity<Void> addRating(
+            @PathVariable Long id,
+            @RequestBody @Valid VeterinaryRatingRequestDTO dto,
+            @AuthenticationPrincipal UserModel user) {
+        veterinaryService.addRating(id, user.getId(), dto);
+        return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/me/monthly-report")
+    @Operation(summary = "[VET] Obter relatório de consultas do mês para o veterinário logado")
+    public ResponseEntity<VeterinarianMonthlyReportDTO> getMyMonthlyReport(@AuthenticationPrincipal UserModel user) {
+        return ResponseEntity.ok(veterinaryService.getMonthlyReport(user));
     }
 }

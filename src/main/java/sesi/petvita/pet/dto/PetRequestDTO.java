@@ -8,6 +8,7 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import sesi.petvita.pet.breed.*;
 import sesi.petvita.pet.gender.Gender;
+import sesi.petvita.pet.species.Porte;
 import sesi.petvita.pet.species.Species;
 
 
@@ -31,6 +32,9 @@ public record PetRequestDTO(
 
         @NotNull
         Species speciespet,
+
+        @NotNull
+        Porte porte,
 
         @NotNull
         Gender gender,
