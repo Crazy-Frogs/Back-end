@@ -8,6 +8,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import java.nio.file.AccessDeniedException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.NoSuchElementException;
@@ -34,6 +35,13 @@ public class GlobalExceptionHandler {
             errors.put(fieldName, errorMessage);
         });
         return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<ErrorResponse> handleAccessDeniedException(AccessDeniedException ex) {
+        System.err.println("Tentativa de acesso negado: " + ex.getMessage());
+        ErrorResponse errorResponse = new ErrorResponse("Acesso Negado. Você não tem permissão para realizar esta ação.");
+        return new ResponseEntity<>(errorResponse, HttpStatus.FORBIDDEN); // Retorna o erro 403
     }
 
     @ExceptionHandler(DataIntegrityViolationException.class)

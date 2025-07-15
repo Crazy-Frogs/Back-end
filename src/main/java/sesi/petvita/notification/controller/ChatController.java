@@ -6,9 +6,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import sesi.petvita.notification.model.ChatMessage;
-import sesi.petvita.notification.service.ChatService; // Crie este serviço
+import sesi.petvita.notification.service.ChatService;
 import sesi.petvita.user.model.UserModel;
 
+import java.nio.file.AccessDeniedException; // Importar
 import java.util.List;
 
 @RestController
@@ -22,7 +23,7 @@ public class ChatController {
     @GetMapping("/{consultationId}")
     public ResponseEntity<List<ChatMessage>> getChatMessages(
             @PathVariable Long consultationId,
-            @AuthenticationPrincipal UserModel user) {
+            @AuthenticationPrincipal UserModel user) throws AccessDeniedException { // Adicionar aqui
         return ResponseEntity.ok(chatService.getMessages(consultationId, user));
     }
 
@@ -30,7 +31,7 @@ public class ChatController {
     public ResponseEntity<ChatMessage> sendMessage(
             @PathVariable Long consultationId,
             @RequestBody String content,
-            @AuthenticationPrincipal UserModel user) {
+            @AuthenticationPrincipal UserModel user) throws AccessDeniedException { // Adicionar aqui
         return ResponseEntity.ok(chatService.sendMessage(consultationId, content, user));
     }
 }
