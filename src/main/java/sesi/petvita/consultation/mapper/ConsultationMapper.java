@@ -19,7 +19,6 @@ public class ConsultationMapper {
                 model.getObservations(),
                 model.getPet() != null ? model.getPet().getName() : "N/A", // Pega o nome do pet
                 model.getVeterinario() != null ? model.getVeterinario().getName() : "N/A", // Pega o nome do vet
-                model.getClinica() != null ? model.getClinica().getName() : "N/A", // Pega o nome da clínica
                 model.getUsuario() != null ? model.getUsuario().getId() : null
         );
     }
