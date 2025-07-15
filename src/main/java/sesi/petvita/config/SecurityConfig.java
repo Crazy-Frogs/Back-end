@@ -36,37 +36,36 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+                .cors(cors -> cors.configurationSource(corsConfigurationSource())) // Aplica a configuração de CORS
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(authorize -> authorize
-                        // 1. Endpoints Públicos (não exigem login)
+                        // Permite requisições OPTIONS para o pre-flight do CORS
+                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+
+                        // Endpoints Públicos
                         .requestMatchers("/auth/**", "/users/register", "/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
 
-                        // 2. Endpoints de Usuário (USER)
+                        // Endpoints de Usuário (USER)
                         .requestMatchers(HttpMethod.POST, "/consultas").hasRole("USER")
                         .requestMatchers(HttpMethod.POST, "/veterinary/{id}/rate").hasRole("USER")
                         .requestMatchers("/pets/**").hasRole("USER")
-                        .requestMatchers("/chat/consultation/**").hasRole("USER") // Para o usuário ver e enviar mensagens
-                        .requestMatchers("/notifications/**").hasRole("USER") // Para o usuário ver suas notificações
+                        .requestMatchers("/chat/**").hasRole("USER")
+                        .requestMatchers("/notifications/**").hasRole("USER")
 
-                        // 3. Endpoints de Veterinário (VETERINARY)
+                        // Endpoints de Veterinário (VETERINARY)
                         .requestMatchers("/consultas/{id}/accept", "/consultas/{id}/reject", "/consultas/{id}/cancel", "/consultas/{id}/finalize").hasRole("VETERINARY")
                         .requestMatchers(HttpMethod.PUT, "/consultas/{id}/report").hasRole("VETERINARY")
                         .requestMatchers(HttpMethod.GET, "/veterinary/me/monthly-report").hasRole("VETERINARY")
-                        .requestMatchers("/chat/veterinary/**").hasRole("VETERINARY") // Para o veterinário ver e enviar mensagens
 
-                        // 4. Endpoints de Admin (ADMIN)
+                        // Endpoints de Admin (ADMIN)
                         .requestMatchers("/admin/**").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.POST, "/veterinary").hasRole("ADMIN") // Apenas admin pode criar veterinários
-                        .requestMatchers(HttpMethod.PUT, "/veterinary/**").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.DELETE, "/veterinary/**").hasRole("ADMIN")
-                        .requestMatchers("/users/**").hasRole("ADMIN")
 
-                        // 5. Endpoints Autenticados (Qualquer um logado pode ver)
-                        .requestMatchers(HttpMethod.GET, "/veterinary/**").authenticated() // Todos podem ver a lista de vets
-                        .requestMatchers(HttpMethod.GET, "/consultas/**").authenticated() // Todos podem ver suas próprias consultas
+                        // Endpoints Autenticados (Qualquer um logado pode ver)
+                        .requestMatchers(HttpMethod.GET, "/veterinary/**").authenticated()
+                        .requestMatchers(HttpMethod.GET, "/consultas/**").authenticated()
+                        .requestMatchers(HttpMethod.GET, "/users/me").authenticated()
 
-                        // 6. Regra Final: Qualquer outra requisição deve estar autenticada
+                        // Regra Final
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
@@ -79,8 +78,11 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
+        // ADICIONE A URL DO SEU FRONT-END AQUI
         configuration.setAllowedOrigins(List.of(
-                "http://localhost:3000"
+                "http://localhost:3000",
+                "https://vet-clinic-api-front.vercel.app",
+                "http://127.0.0.1:5500"
         ));
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(List.of("*"));
