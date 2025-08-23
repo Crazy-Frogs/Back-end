@@ -20,6 +20,9 @@ public record VeterinaryRequestDTO(
         @Pattern(regexp = "^[A-Za-z]{2}\\s?\\d+$", message = "Formato de CRMV inválido")
         String crmv,
 
+        @NotBlank @Pattern(regexp = "^\\d{7,9}X?$", message = "Formato de RG inválido")
+        String rg,
+
         SpecialityEnum specialityenum,
 
         @NotBlank @Pattern(regexp = "^\\d{2}\\d{8,9}$")

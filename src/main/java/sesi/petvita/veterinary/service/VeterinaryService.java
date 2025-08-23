@@ -51,7 +51,7 @@ public class VeterinaryService {
                 .phone(dto.phone())
                 .role(UserRole.VETERINARY)
                 .address("Não informado")
-                .rg("Não informado")
+                .rg(dto.rg()) // <<-- ALTERAÇÃO FEITA AQUI
                 .imageurl(dto.imageurl())
                 .build();
         UserModel savedUserAccount = userRepository.save(userAccount);
@@ -69,6 +69,8 @@ public class VeterinaryService {
         return veterinaryMapper.toDTO(savedVeterinary);
     }
 
+    // ... (O resto da classe service permanece igual)
+
     @Transactional
     public VeterinaryResponseDTO updateVeterinary(Long id, VeterinaryRequestDTO dto) {
         VeterinaryModel vet = veterinaryRepository.findById(id)
@@ -83,6 +85,8 @@ public class VeterinaryService {
         userAccount.setEmail(dto.email());
         userAccount.setPhone(dto.phone());
         userAccount.setImageurl(dto.imageurl());
+        userAccount.setRg(dto.rg()); // <<-- ADICIONE A ATUALIZAÇÃO DO RG AQUI TAMBÉM
+
         if (dto.password() != null && !dto.password().isEmpty()) {
             userAccount.setPassword(passwordEncoder.encode(dto.password()));
         }
@@ -101,11 +105,13 @@ public class VeterinaryService {
 
     @Transactional
     public void deleteVeterinary(Long id) {
-        if (!veterinaryRepository.existsById(id)) {
-            throw new NoSuchElementException("Veterinário não encontrado com o ID: " + id);
+        VeterinaryModel vet = veterinaryRepository.findById(id)
+                .orElseThrow(() -> new NoSuchElementException("Veterinário não encontrado com o ID: " + id));
+
+        if (vet.getUserAccount() != null) {
+            userRepository.delete(vet.getUserAccount());
         }
-        // A lógica para deletar o usuário associado pode ser adicionada aqui se necessário
-        veterinaryRepository.deleteById(id);
+        veterinaryRepository.delete(vet);
     }
 
     @Transactional
