@@ -35,6 +35,13 @@ public class PetService {
                 .orElseThrow(() -> new NoSuchElementException("Pet não encontrado com o ID: " + id));
     }
 
+    public List<PetResponseDTO> findPetsByUser(UserModel user) {
+        return petRepository.findByUsuario(user)
+                .stream()
+                .map(petMapper::toDTO)
+                .collect(Collectors.toList());
+    }
+
     public PetResponseDTO createPet(PetRequestDTO petDto) {
         UserModel owner = userRepository.findById(petDto.usuarioId())
                 .orElseThrow(() -> new NoSuchElementException("Usuário dono do pet não encontrado com o ID: " + petDto.usuarioId()));

@@ -6,10 +6,12 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import sesi.petvita.pet.dto.PetRequestDTO;
 import sesi.petvita.pet.dto.PetResponseDTO;
 import sesi.petvita.pet.service.PetService; // Importa o novo service
+import sesi.petvita.user.model.UserModel;
 
 import java.util.List;
 
@@ -53,5 +55,12 @@ public class PetController {
     public ResponseEntity<Void> deletePet(@PathVariable Long id) {
         petService.deletePet(id);
         return ResponseEntity.noContent().build();
+    }
+
+    // Dentro da classe PetController
+    @GetMapping("/my-pets")
+    @Operation(summary = "Listar os pets do usuário autenticado")
+    public ResponseEntity<List<PetResponseDTO>> getMyPets(@AuthenticationPrincipal UserModel user) {
+        return ResponseEntity.ok(petService.findPetsByUser(user));
     }
 }

@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -16,6 +17,8 @@ import sesi.petvita.veterinary.dto.VeterinaryResponseDTO;
 import sesi.petvita.veterinary.service.VeterinaryService;
 import sesi.petvita.veterinary.speciality.SpecialityEnum;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 
 @RestController
@@ -57,6 +60,15 @@ public class VeterinaryController {
     public ResponseEntity<VeterinaryResponseDTO> updateVeterinary(@PathVariable Long id, @Valid @RequestBody VeterinaryRequestDTO requestDTO) {
         return ResponseEntity.ok(veterinaryService.updateVeterinary(id, requestDTO));
     }
+
+    @GetMapping("/{vetId}/available-slots")
+    @Operation(summary = "[TODOS] Listar horários disponíveis para um veterinário em uma data específica")
+    public ResponseEntity<List<LocalTime>> getAvailableSlots(
+            @PathVariable Long vetId,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
+        return ResponseEntity.ok(veterinaryService.getAvailableSlots(vetId, date));
+    }
+
 
     @DeleteMapping("/{id}")
     @Operation(summary = "[ADMIN] Deletar veterinário pelo ID")

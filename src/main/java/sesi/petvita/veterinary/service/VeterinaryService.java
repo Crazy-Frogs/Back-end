@@ -22,6 +22,7 @@ import sesi.petvita.veterinary.repository.VeterinaryRepository;
 import sesi.petvita.veterinary.speciality.SpecialityEnum;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Set;
@@ -68,8 +69,6 @@ public class VeterinaryService {
         VeterinaryModel savedVeterinary = veterinaryRepository.save(newVeterinary);
         return veterinaryMapper.toDTO(savedVeterinary);
     }
-
-    // ... (O resto da classe service permanece igual)
 
     @Transactional
     public VeterinaryResponseDTO updateVeterinary(Long id, VeterinaryRequestDTO dto) {
@@ -183,5 +182,26 @@ public class VeterinaryService {
         Set<String> patients = monthlyConsultations.stream().map(c -> c.getPet().getName()).collect(Collectors.toSet());
 
         return new VeterinarianMonthlyReportDTO(year, month, total, finalized, pending, patients);
+    }
+
+    public List<LocalTime> getAvailableSlots(Long vetId, LocalDate date) {
+        // 1. Define todos os horários de um turno padrão (ex: 9h-12h, 14h-18h)
+        List<LocalTime> allDaySlots = List.of(
+                LocalTime.of(9, 0), LocalTime.of(10, 0), LocalTime.of(11, 0),
+                LocalTime.of(14, 0), LocalTime.of(15, 0), LocalTime.of(16, 0), LocalTime.of(17, 0)
+        );
+
+        // 2. Busca no banco de dados todas as consultas já agendadas para este veterinário nesta data
+        List<LocalTime> bookedSlots = consultationRepository.findAll().stream()
+                .filter(c -> c.getVeterinario().getId().equals(vetId) &&
+                        c.getConsultationdate().equals(date) &&
+                        (c.getStatus() == ConsultationStatus.AGENDADA || c.getStatus() == ConsultationStatus.PENDENTE))
+                .map(ConsultationModel::getConsultationtime)
+                .collect(Collectors.toList());
+
+        // 3. Retorna apenas os horários que NÃO estão na lista de agendados
+        return allDaySlots.stream()
+                .filter(slot -> !bookedSlots.contains(slot))
+                .collect(Collectors.toList());
     }
 }
