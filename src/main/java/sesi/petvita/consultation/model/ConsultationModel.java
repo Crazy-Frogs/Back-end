@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.Length;
 import sesi.petvita.consultation.status.ConsultationStatus;
 import sesi.petvita.notification.model.ChatMessage;
 import sesi.petvita.pet.model.PetModel;
@@ -57,7 +58,7 @@ public class ConsultationModel {
         private UserModel usuario;
 
         @Enumerated(EnumType.STRING)
-        @Column(nullable = false)
+        @Column(nullable = false , length = 50)
         @Builder.Default
         private ConsultationStatus status = ConsultationStatus.PENDENTE;
 

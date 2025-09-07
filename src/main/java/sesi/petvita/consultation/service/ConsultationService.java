@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import sesi.petvita.consultation.dto.ConsultationRequestDTO;
 import sesi.petvita.consultation.dto.ConsultationResponseDTO;
+import sesi.petvita.consultation.dto.ConsultationUpdateRequestDTO;
 import sesi.petvita.consultation.mapper.ConsultationMapper;
 import sesi.petvita.consultation.model.ConsultationModel;
 import sesi.petvita.consultation.repository.ConsultationRepository;
@@ -52,6 +53,7 @@ public class ConsultationService {
                 .specialityEnum(dto.specialityEnum())
                 .status(ConsultationStatus.PENDENTE)
                 .reason(dto.reason())
+                .observations(dto.observations())
                 .usuario(user)
                 .pet(pet)
                 .veterinario(vet)
@@ -84,14 +86,23 @@ public class ConsultationService {
     }
 
     @Transactional
-    public void cancelConsultation(Long consultationId) {
+    public void cancelConsultation(Long consultationId, UserModel user) { // Adicione UserModel user como parâmetro
         ConsultationModel consultation = findByIdOrThrow(consultationId);
+
+        // VERIFICAÇÃO DE PROPRIEDADE
+        if (!consultation.getUsuario().getId().equals(user.getId())) {
+            throw new IllegalStateException("Você só pode cancelar suas próprias consultas.");
+        }
+
         if (consultation.getStatus() != ConsultationStatus.AGENDADA) {
             throw new IllegalStateException("Apenas consultas 'AGENDADAS' podem ser canceladas.");
         }
         consultation.setStatus(ConsultationStatus.CANCELADA);
         consultationRepository.save(consultation);
-        notificationService.createNotification(consultation.getUsuario(), "Atenção: sua consulta para " + consultation.getPet().getName() + " foi cancelada pelo veterinário.");
+
+        // Notificar o veterinário
+        notificationService.createNotification(consultation.getVeterinario().getUserAccount(),
+                "A consulta para " + consultation.getPet().getName() + " foi cancelada pelo cliente.");
     }
 
     @Transactional
@@ -103,6 +114,23 @@ public class ConsultationService {
         consultation.setStatus(ConsultationStatus.FINALIZADA);
         consultationRepository.save(consultation);
         notificationService.createNotification(consultation.getUsuario(), "Sua consulta para " + consultation.getPet().getName() + " foi finalizada. O relatório estará disponível em breve.");
+    }
+
+    @Transactional
+    public ConsultationResponseDTO updateConsultation(Long consultationId, ConsultationUpdateRequestDTO dto, UserModel user) {
+        ConsultationModel consultation = findByIdOrThrow(consultationId);
+
+        if (!consultation.getUsuario().getId().equals(user.getId())) {
+            throw new IllegalStateException("Você só pode editar suas próprias consultas.");
+        }
+
+        if (dto.consultationdate() != null) consultation.setConsultationdate(dto.consultationdate());
+        if (dto.consultationtime() != null) consultation.setConsultationtime(dto.consultationtime());
+        if (dto.reason() != null) consultation.setReason(dto.reason());
+        if (dto.observations() != null) consultation.setObservations(dto.observations());
+
+        ConsultationModel updatedConsultation = consultationRepository.save(consultation);
+        return consultationMapper.toDTO(updatedConsultation);
     }
 
     @Transactional

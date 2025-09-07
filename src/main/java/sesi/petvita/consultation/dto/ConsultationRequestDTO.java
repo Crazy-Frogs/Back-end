@@ -30,7 +30,7 @@ public record ConsultationRequestDTO(
         SpecialityEnum specialityEnum,
 
 
-        @NotNull
+
         ConsultationStatus status,
 
         @NotBlank

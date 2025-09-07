@@ -8,9 +8,11 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+
 import org.springframework.web.bind.annotation.*;
 import sesi.petvita.consultation.dto.ConsultationRequestDTO;
 import sesi.petvita.consultation.dto.ConsultationResponseDTO;
+import sesi.petvita.consultation.dto.ConsultationUpdateRequestDTO;
 import sesi.petvita.consultation.service.ConsultationService;
 import sesi.petvita.user.model.UserModel;
 import sesi.petvita.veterinary.speciality.SpecialityEnum;
@@ -59,16 +61,9 @@ public class ConsultationController {
     }
 
     @PostMapping("/{id}/cancel")
-    @Operation(summary = "[VET] Cancelar uma consulta agendada")
-    public ResponseEntity<Void> cancel(@PathVariable Long id) {
-        service.cancelConsultation(id);
-        return ResponseEntity.ok().build();
-    }
-
-    @PostMapping("/{id}/finalize")
-    @Operation(summary = "[VET] Finalizar uma consulta agendada")
-    public ResponseEntity<Void> finalize(@PathVariable Long id) {
-        service.finalizeConsultation(id);
+    @Operation(summary = "[USER/VET] Cancelar uma consulta agendada")
+    public ResponseEntity<Void> cancel(@PathVariable Long id, @AuthenticationPrincipal UserModel user) {
+        service.cancelConsultation(id, user);
         return ResponseEntity.ok().build();
     }
 
@@ -77,6 +72,15 @@ public class ConsultationController {
     public ResponseEntity<Void> writeReport(@PathVariable Long id, @RequestBody String report) {
         service.writeReport(id, report);
         return ResponseEntity.ok().build();
+    }
+
+    @PutMapping("/{id}")
+    @Operation(summary = "[USER] Editar uma consulta")
+    public ResponseEntity<ConsultationResponseDTO> update(
+            @PathVariable Long id,
+            @RequestBody @Valid ConsultationUpdateRequestDTO dto,
+            @AuthenticationPrincipal UserModel user) {
+        return ResponseEntity.ok(service.updateConsultation(id, dto, user));
     }
 
     @GetMapping("/all")
