@@ -51,6 +51,8 @@ public class SecurityConfig {
                         .requestMatchers("/pets/**").hasRole("USER")
                         .requestMatchers("/chat/**").hasRole("USER")
                         .requestMatchers("/notifications/**").hasRole("USER")
+                        .requestMatchers(HttpMethod.POST, "/consultas/{id}/cancel").hasRole("USER")
+                        .requestMatchers(HttpMethod.PUT, "/consultas/{id}").hasRole("USER")
 
                         // Endpoints de Veterinário (VETERINARY)
                         .requestMatchers("/consultas/{id}/accept", "/consultas/{id}/reject", "/consultas/{id}/cancel", "/consultas/{id}/finalize").hasRole("VETERINARY")
