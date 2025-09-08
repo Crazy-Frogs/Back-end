@@ -39,6 +39,9 @@ public class PetController {
     @PostMapping
     @Operation(summary = "Cadastrar um novo pet")
     public ResponseEntity<PetResponseDTO> createPet(@Valid @RequestBody PetRequestDTO petDto) {
+        // ===== LINHA DE DEBUG 1 =====
+        System.out.println(">>> [CONTROLLER] DTO Recebido: " + petDto.toString());
+        // ============================
         PetResponseDTO createdPet = petService.createPet(petDto);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdPet);
     }

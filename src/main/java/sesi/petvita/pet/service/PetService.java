@@ -14,7 +14,6 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
-// NOVO ARQUIVO (lembre-se de criar o pacote 'service' dentro de 'pet')
 @Service
 @RequiredArgsConstructor
 public class PetService {
@@ -35,19 +34,32 @@ public class PetService {
                 .orElseThrow(() -> new NoSuchElementException("Pet não encontrado com o ID: " + id));
     }
 
-    public List<PetResponseDTO> findPetsByUser(UserModel user) {
-        return petRepository.findByUsuario(user)
-                .stream()
-                .map(petMapper::toDTO)
-                .collect(Collectors.toList());
-    }
-
     public PetResponseDTO createPet(PetRequestDTO petDto) {
         UserModel owner = userRepository.findById(petDto.usuarioId())
                 .orElseThrow(() -> new NoSuchElementException("Usuário dono do pet não encontrado com o ID: " + petDto.usuarioId()));
 
-        PetModel pet = petMapper.toModel(petDto);
+        PetModel pet = new PetModel();
+        pet.setName(petDto.name());
+        pet.setAge(petDto.age());
+        pet.setImageurl(petDto.imageurl());
+        pet.setPersonalizatedSpecies(petDto.personalizatedSpecies());
+        pet.setPersonalizedBreed(petDto.personalizedBreed());
+        pet.setSpeciespet(petDto.speciespet());
+        pet.setPorte(petDto.porte());
+        pet.setGender(petDto.gender());
+        pet.setBirdBreed(petDto.birdBreed());
+        pet.setCatBreed(petDto.catBreed());
+        pet.setDogBreed(petDto.dogBreed());
+        pet.setFishBreed(petDto.fishBreed());
+        pet.setRabbitBreed(petDto.rabbitBreed());
+        pet.setReptileBreed(petDto.reptileBreed());
+        pet.setRodentBreed(petDto.rodentBreed());
         pet.setUsuario(owner);
+
+        // ===== LINHA DE DEBUG ADICIONADA AQUI =====
+        System.out.println(">>> [SERVICE] Objeto PetModel prestes a salvar: " + pet.toString());
+        // ==========================================
+
         PetModel savedPet = petRepository.save(pet);
         return petMapper.toDTO(savedPet);
     }
@@ -62,8 +74,18 @@ public class PetService {
         existingPet.setName(petDto.name());
         existingPet.setAge(petDto.age());
         existingPet.setImageurl(petDto.imageurl());
+        existingPet.setPersonalizatedSpecies(petDto.personalizatedSpecies());
+        existingPet.setPersonalizedBreed(petDto.personalizedBreed());
         existingPet.setSpeciespet(petDto.speciespet());
-        // ... atualize outros campos do pet conforme necessário
+        existingPet.setPorte(petDto.porte());
+        existingPet.setGender(petDto.gender());
+        existingPet.setBirdBreed(petDto.birdBreed());
+        existingPet.setCatBreed(petDto.catBreed());
+        existingPet.setDogBreed(petDto.dogBreed());
+        existingPet.setFishBreed(petDto.fishBreed());
+        existingPet.setRabbitBreed(petDto.rabbitBreed());
+        existingPet.setReptileBreed(petDto.reptileBreed());
+        existingPet.setRodentBreed(petDto.rodentBreed());
         existingPet.setUsuario(owner);
 
         PetModel updatedPet = petRepository.save(existingPet);
@@ -75,5 +97,12 @@ public class PetService {
             throw new NoSuchElementException("Pet não encontrado com o ID: " + id);
         }
         petRepository.deleteById(id);
+    }
+
+    public List<PetResponseDTO> findPetsByUser(UserModel user) {
+        return petRepository.findByUsuario(user)
+                .stream()
+                .map(petMapper::toDTO)
+                .collect(Collectors.toList());
     }
 }
