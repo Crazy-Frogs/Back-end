@@ -101,6 +101,18 @@ public class ConsultationController {
         return ResponseEntity.ok(service.findConsultationsBySpeciality(speciality));
     }
 
+    @GetMapping("/vet/my-consultations")
+    @Operation(summary = "[VET] Listar as minhas consultas (Veterinário)")
+    public ResponseEntity<List<ConsultationResponseDTO>> findMyConsultationsForVet(@AuthenticationPrincipal UserModel user) {
+        return ResponseEntity.ok(service.findForAuthenticatedVeterinary(user));
+    }
+
+    @PutMapping("/consultations/{id}")
+    @Operation(summary = "[ADMIN] Atualizar dados de uma consulta")
+    public ResponseEntity<ConsultationResponseDTO> updateConsultation(@PathVariable Long id, @RequestBody @Valid ConsultationUpdateRequestDTO dto) {
+        return ResponseEntity.ok(service.updateConsultationByAdmin(id, dto));
+    }
+
     @GetMapping("/by-veterinary-name")
     @Operation(summary = "Buscar consultas por nome do médico")
     public ResponseEntity<List<ConsultationResponseDTO>> findByVeterinaryName(@RequestParam String name) {

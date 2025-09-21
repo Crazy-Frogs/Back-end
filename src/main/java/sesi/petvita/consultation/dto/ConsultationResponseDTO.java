@@ -17,5 +17,6 @@ public record ConsultationResponseDTO(
         String observations,
         String petName,
         String veterinaryName,
-        Long usuarioId
+        Long usuarioId,
+        String userName
 ) {}

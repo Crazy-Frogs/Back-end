@@ -63,6 +63,39 @@ public class ConsultationService {
         return consultationMapper.toDTO(savedConsultation);
     }
 
+    public List<ConsultationResponseDTO> findForAuthenticatedVeterinary(UserModel user) {
+        // 1. Encontra o perfil do veterinário associado à conta de usuário de login
+        VeterinaryModel vet = veterinaryRepository.findByUserAccount(user)
+                .orElseThrow(() -> new NoSuchElementException("Perfil de veterinário não encontrado para este usuário."));
+
+        // 2. Busca todas as consultas associadas a esse perfil de veterinário
+        return consultationRepository.findByVeterinarioId(vet.getId()).stream()
+                .map(consultationMapper::toDTO)
+                .collect(Collectors.toList());
+    }
+
+    @Transactional
+    public ConsultationResponseDTO updateConsultationByAdmin(Long consultationId, ConsultationUpdateRequestDTO dto) {
+        ConsultationModel consultation = findByIdOrThrow(consultationId);
+
+        // Admin não precisa de verificação de propriedade, então atualizamos diretamente
+        if (dto.consultationdate() != null) {
+            consultation.setConsultationdate(dto.consultationdate());
+        }
+        if (dto.consultationtime() != null) {
+            consultation.setConsultationtime(dto.consultationtime());
+        }
+        if (dto.reason() != null && !dto.reason().isEmpty()) {
+            consultation.setReason(dto.reason());
+        }
+        if (dto.observations() != null && !dto.observations().isEmpty()) {
+            consultation.setObservations(dto.observations());
+        }
+
+        ConsultationModel updatedConsultation = consultationRepository.save(consultation);
+        return consultationMapper.toDTO(updatedConsultation);
+    }
+
     @Transactional
     public void acceptConsultation(Long consultationId) {
         ConsultationModel consultation = findByIdOrThrow(consultationId);

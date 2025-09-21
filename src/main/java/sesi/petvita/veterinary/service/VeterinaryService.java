@@ -45,14 +45,16 @@ public class VeterinaryService {
             throw new IllegalStateException("Este e-mail já está em uso por outro usuário.");
         }
 
+        String encodedPassword = passwordEncoder.encode(dto.password());
+
         UserModel userAccount = UserModel.builder()
                 .username(dto.name())
                 .email(dto.email())
-                .password(passwordEncoder.encode(dto.password()))
+                .password(encodedPassword)
                 .phone(dto.phone())
                 .role(UserRole.VETERINARY)
                 .address("Não informado")
-                .rg(dto.rg()) // <<-- ALTERAÇÃO FEITA AQUI
+                .rg(dto.rg())
                 .imageurl(dto.imageurl())
                 .build();
         UserModel savedUserAccount = userRepository.save(userAccount);
@@ -60,6 +62,7 @@ public class VeterinaryService {
         VeterinaryModel newVeterinary = VeterinaryModel.builder()
                 .name(dto.name())
                 .email(dto.email())
+                .password(encodedPassword) // <-- CORREÇÃO: Esta linha estava faltando
                 .crmv(dto.crmv())
                 .specialityenum(dto.specialityenum())
                 .phone(dto.phone())
@@ -84,10 +87,12 @@ public class VeterinaryService {
         userAccount.setEmail(dto.email());
         userAccount.setPhone(dto.phone());
         userAccount.setImageurl(dto.imageurl());
-        userAccount.setRg(dto.rg()); // <<-- ADICIONE A ATUALIZAÇÃO DO RG AQUI TAMBÉM
+        userAccount.setRg(dto.rg());
 
         if (dto.password() != null && !dto.password().isEmpty()) {
-            userAccount.setPassword(passwordEncoder.encode(dto.password()));
+            String encodedPassword = passwordEncoder.encode(dto.password());
+            userAccount.setPassword(encodedPassword);
+            vet.setPassword(encodedPassword); // Garante que a senha seja atualizada nos dois lugares
         }
         userRepository.save(userAccount);
 
@@ -128,11 +133,12 @@ public class VeterinaryService {
                 .build();
         ratingRepository.save(newRating);
 
-        int newRatingCount = vet.getRatingCount() + 1;
-        double newAverage = vet.getAverageRating() + (dto.rating() - vet.getAverageRating()) / newRatingCount;
+        // Recalcula a média de forma mais robusta
+        List<VeterinaryRating> allRatings = vet.getRatings();
+        double totalRating = allRatings.stream().mapToDouble(VeterinaryRating::getRating).sum();
+        vet.setRatingCount(allRatings.size());
+        vet.setAverageRating(totalRating / allRatings.size());
 
-        vet.setRatingCount(newRatingCount);
-        vet.setAverageRating(newAverage);
         veterinaryRepository.save(vet);
     }
 
@@ -150,9 +156,9 @@ public class VeterinaryService {
 
     public List<VeterinaryResponseDTO> searchVeterinarians(String name, SpecialityEnum speciality) {
         List<VeterinaryModel> result;
-        if (name != null && speciality != null) {
+        if (name != null && !name.isEmpty() && speciality != null) {
             result = veterinaryRepository.findByNameContainingIgnoreCaseAndSpecialityenum(name, speciality);
-        } else if (name != null) {
+        } else if (name != null && !name.isEmpty()) {
             result = veterinaryRepository.findByNameContainingIgnoreCase(name);
         } else if (speciality != null) {
             result = veterinaryRepository.findBySpecialityenum(speciality);
@@ -169,12 +175,10 @@ public class VeterinaryService {
         LocalDate today = LocalDate.now();
         int year = today.getYear();
         int month = today.getMonthValue();
+        LocalDate startDate = LocalDate.of(year, month, 1);
+        LocalDate endDate = startDate.withDayOfMonth(startDate.lengthOfMonth());
 
-        List<ConsultationModel> monthlyConsultations = consultationRepository.findAll().stream()
-                .filter(c -> c.getVeterinario().getId().equals(vet.getId()) &&
-                        c.getConsultationdate().getYear() == year &&
-                        c.getConsultationdate().getMonthValue() == month)
-                .collect(Collectors.toList());
+        List<ConsultationModel> monthlyConsultations = consultationRepository.findByVeterinarioAndConsultationdateBetween(vet, startDate, endDate);
 
         long total = monthlyConsultations.size();
         long finalized = monthlyConsultations.stream().filter(c -> c.getStatus() == ConsultationStatus.FINALIZADA).count();
@@ -185,21 +189,17 @@ public class VeterinaryService {
     }
 
     public List<LocalTime> getAvailableSlots(Long vetId, LocalDate date) {
-        // 1. Define todos os horários de um turno padrão (ex: 9h-12h, 14h-18h)
         List<LocalTime> allDaySlots = List.of(
                 LocalTime.of(9, 0), LocalTime.of(10, 0), LocalTime.of(11, 0),
                 LocalTime.of(14, 0), LocalTime.of(15, 0), LocalTime.of(16, 0), LocalTime.of(17, 0)
         );
 
-        // 2. Busca no banco de dados todas as consultas já agendadas para este veterinário nesta data
-        List<LocalTime> bookedSlots = consultationRepository.findAll().stream()
-                .filter(c -> c.getVeterinario().getId().equals(vetId) &&
-                        c.getConsultationdate().equals(date) &&
+        List<LocalTime> bookedSlots = consultationRepository.findByVeterinarioId(vetId).stream()
+                .filter(c -> c.getConsultationdate().equals(date) &&
                         (c.getStatus() == ConsultationStatus.AGENDADA || c.getStatus() == ConsultationStatus.PENDENTE))
                 .map(ConsultationModel::getConsultationtime)
                 .collect(Collectors.toList());
 
-        // 3. Retorna apenas os horários que NÃO estão na lista de agendados
         return allDaySlots.stream()
                 .filter(slot -> !bookedSlots.contains(slot))
                 .collect(Collectors.toList());
