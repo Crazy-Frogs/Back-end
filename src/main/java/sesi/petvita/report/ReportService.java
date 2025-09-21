@@ -1,20 +1,20 @@
 package sesi.petvita.report;
 
-
 import com.itextpdf.text.*;
 import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import sesi.petvita.consultation.model.ConsultationModel;
 import sesi.petvita.consultation.repository.ConsultationRepository;
 import sesi.petvita.veterinary.speciality.SpecialityEnum;
 
 import java.io.ByteArrayOutputStream;
+import java.time.LocalDate; // ADICIONADO
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors; // ADICIONADO
 
 @RequiredArgsConstructor
 @Service
@@ -22,8 +22,10 @@ public class ReportService {
 
     private final ConsultationRepository consultationRepository;
 
-
+    // MÉTODO ATUALIZADO para incluir os filtros de data
     public byte[] generateConsultationReportPdf(
+            Optional<LocalDate> startDate,
+            Optional<LocalDate> endDate,
             Optional<Long> veterinarioId,
             Optional<SpecialityEnum> speciality) throws DocumentException {
 
@@ -37,11 +39,9 @@ public class ReportService {
             Font fontTitle = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 20, BaseColor.BLACK);
             Paragraph title = new Paragraph("Relatório de Consultas", fontTitle);
 
-            if (veterinarioId.isPresent()) {
-                title.add(new Chunk("\n(Veterinário ID: " + veterinarioId.get() + ")"));
-            }
-            if (speciality.isPresent()) {
-                title.add(new Chunk("\n(Especialidade: " + speciality.get().name() + ")")); // Use .name() ou .getDisplayName() se tiver
+            // Adiciona informações sobre os filtros de data no título do PDF
+            if (startDate.isPresent() && endDate.isPresent()) {
+                title.add(new Chunk("\nPeríodo: " + startDate.get() + " a " + endDate.get()));
             }
 
             title.setAlignment(Element.ALIGN_CENTER);
@@ -64,21 +64,20 @@ public class ReportService {
             addTableHeader(table, "Veterinário", fontHeader, headerBgColor);
             addTableHeader(table, "Especialidade", fontHeader, headerBgColor);
 
-            List<ConsultationModel> consultations;
+            // LÓGICA DE FILTRAGEM ATUALIZADA
+            // Primeiro, buscamos todos os dados. Em um sistema com muitos dados,
+            // o ideal seria criar um método no repositório que já fizesse essa filtragem complexa.
+            List<ConsultationModel> allConsultations = consultationRepository.findAll();
 
-
-            if (veterinarioId.isPresent() && speciality.isPresent()) {
-                consultations = consultationRepository.findByVeterinarioIdAndSpecialityEnum(veterinarioId.get(), speciality.get());
-            } else if (veterinarioId.isPresent()) {
-                consultations = consultationRepository.findByVeterinarioId(veterinarioId.get());
-            } else if (speciality.isPresent()) {
-                consultations = consultationRepository.findBySpecialityEnum(speciality.get());
-            } else {
-                consultations = consultationRepository.findAll(); // NENHUM FILTRO -> Retorna todas
-            }
+            List<ConsultationModel> filteredConsultations = allConsultations.stream()
+                    .filter(c -> startDate.map(sd -> !c.getConsultationdate().isBefore(sd)).orElse(true))
+                    .filter(c -> endDate.map(ed -> !c.getConsultationdate().isAfter(ed)).orElse(true))
+                    .filter(c -> veterinarioId.map(id -> c.getVeterinario().getId().equals(id)).orElse(true))
+                    .filter(c -> speciality.map(s -> c.getSpecialityEnum().equals(s)).orElse(true))
+                    .collect(Collectors.toList());
 
             Font fontCell = FontFactory.getFont(FontFactory.HELVETICA, 10, BaseColor.BLACK);
-            for (ConsultationModel consultation : consultations) { // <-- Itere sobre a lista filtrada
+            for (ConsultationModel consultation : filteredConsultations) { // Itera sobre a lista JÁ FILTRADA
 
                 String petName = consultation.getPet() != null ? consultation.getPet().getName() : "N/A";
                 String vetName = consultation.getVeterinario() != null ? consultation.getVeterinario().getName() : "N/A";

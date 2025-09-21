@@ -10,11 +10,12 @@ import sesi.petvita.admin.dto.MonthlyReportDTO;
 import sesi.petvita.admin.dto.UserDetailsWithPetsDTO;
 import sesi.petvita.admin.service.AdminReportService;
 import sesi.petvita.consultation.dto.ConsultationResponseDTO;
+import sesi.petvita.consultation.dto.ConsultationUpdateRequestDTO;
 import sesi.petvita.consultation.service.ConsultationService;
+import sesi.petvita.notification.service.ChatService;
 import sesi.petvita.user.dto.UserResponseDTO;
 import sesi.petvita.user.dto.UserUpdateRequestDTO;
 import sesi.petvita.user.service.UserService;
-import sesi.petvita.veterinary.dto.VeterinaryRequestDTO;
 import sesi.petvita.veterinary.dto.VeterinaryResponseDTO;
 import sesi.petvita.veterinary.service.VeterinaryService;
 import sesi.petvita.veterinary.speciality.SpecialityEnum;
@@ -33,7 +34,7 @@ public class AdminController {
     private final VeterinaryService veterinaryService;
     private final ConsultationService consultationService;
     private final AdminReportService adminReportService;
-
+    private final ChatService chatService;
 
     @GetMapping("/users")
     @Operation(summary = "[ADMIN] Listar ou buscar usuários por nome")
@@ -63,25 +64,17 @@ public class AdminController {
         return ResponseEntity.noContent().build();
     }
 
-
     @GetMapping("/veterinarians")
     @Operation(summary = "[ADMIN] Listar ou buscar veterinários por nome e/ou especialidade")
     public ResponseEntity<List<VeterinaryResponseDTO>> searchVeterinarians(
             @RequestParam(required = false) String name,
             @RequestParam(required = false) SpecialityEnum speciality) {
-        // Agora este endpoint é funcional
         return ResponseEntity.ok(veterinaryService.searchVeterinarians(name, speciality));
-    }
-
-    @GetMapping("/consultations/by-veterinarian/{vetId}")
-    @Operation(summary = "[ADMIN] Ver todas as consultas de um veterinário específico")
-    public ResponseEntity<List<ConsultationResponseDTO>> getConsultationsByVeterinarian(@PathVariable Long vetId) {
-        return ResponseEntity.ok().build();
     }
 
     @PutMapping("/veterinarians/{id}")
     @Operation(summary = "[ADMIN] Atualizar os dados de um veterinário")
-    public ResponseEntity<VeterinaryResponseDTO> updateVeterinary(@PathVariable Long id, @RequestBody @Valid VeterinaryRequestDTO dto) {
+    public ResponseEntity<VeterinaryResponseDTO> updateVeterinary(@PathVariable Long id, @RequestBody @Valid sesi.petvita.veterinary.dto.VeterinaryRequestDTO dto) {
         return ResponseEntity.ok(veterinaryService.updateVeterinary(id, dto));
     }
 
@@ -92,25 +85,34 @@ public class AdminController {
         return ResponseEntity.noContent().build();
     }
 
-
     @GetMapping("/consultations")
     @Operation(summary = "[ADMIN] Ver todas as consultas do sistema")
     public ResponseEntity<List<ConsultationResponseDTO>> getAllConsultations() {
         return ResponseEntity.ok(consultationService.findAllForAdmin());
     }
 
-    @GetMapping("/reports/monthly-summary")
-    @Operation(summary = "[ADMIN] Ver relatório mensal de consultas com filtros")
-    public ResponseEntity<MonthlyReportDTO> getMonthlyReport(
-            @RequestParam(required = false) Integer year,
-            @RequestParam(required = false) Integer month,
+    @PutMapping("/consultations/{id}")
+    @Operation(summary = "[ADMIN] Atualizar dados de uma consulta")
+    public ResponseEntity<ConsultationResponseDTO> updateConsultation(@PathVariable Long id, @RequestBody @Valid ConsultationUpdateRequestDTO dto) {
+        return ResponseEntity.ok(consultationService.updateConsultationByAdmin(id, dto));
+    }
+
+    // Endpoint para o admin ver a lista de todas as conversas
+    @GetMapping("/chats/conversations")
+    @Operation(summary = "[ADMIN] Listar todas as conversas do sistema")
+    public ResponseEntity<List<ConsultationResponseDTO>> getAllConversations() {
+        return ResponseEntity.ok(chatService.getAllConversationsForAdmin());
+    }
+
+    @GetMapping("/reports/summary")
+    @Operation(summary = "[ADMIN] Ver relatório customizado por período")
+    public ResponseEntity<sesi.petvita.admin.dto.ReportSummaryDTO> getReportSummary(
+            @RequestParam LocalDate startDate,
+            @RequestParam LocalDate endDate,
             @RequestParam Optional<Long> veterinaryId,
             @RequestParam Optional<SpecialityEnum> speciality) {
 
-        int currentYear = (year != null) ? year : LocalDate.now().getYear();
-        int currentMonth = (month != null) ? month : LocalDate.now().getMonthValue();
-
-        MonthlyReportDTO report = adminReportService.getMonthlySummary(currentYear, currentMonth, veterinaryId, speciality);
+        sesi.petvita.admin.dto.ReportSummaryDTO report = adminReportService.getSummaryByDateRange(startDate, endDate, veterinaryId, speciality);
         return ResponseEntity.ok(report);
     }
 }
