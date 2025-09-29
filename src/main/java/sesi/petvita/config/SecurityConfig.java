@@ -59,6 +59,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.PUT, "/consultas/{id}/report").hasRole("VETERINARY")
                         .requestMatchers(HttpMethod.GET, "/veterinary/me/monthly-report").hasRole("VETERINARY")
                         .requestMatchers(HttpMethod.GET, "/consultas/vet/my-consultations").hasRole("VETERINARY")
+                        .requestMatchers(HttpMethod.GET, "/veterinary/me").hasRole("VETERINARY")
 
                         // Endpoints de Admin (ADMIN)
                         .requestMatchers("/admin/**").hasRole("ADMIN")
