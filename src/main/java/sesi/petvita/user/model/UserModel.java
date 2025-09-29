@@ -65,6 +65,7 @@ public class UserModel implements UserDetails {
     @NotBlank
     @Column(nullable = false)
     private String imageurl;
+    private String imagePublicId;
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)

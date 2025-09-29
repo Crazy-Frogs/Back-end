@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import sesi.petvita.admin.dto.UserDetailsWithPetsDTO;
 import sesi.petvita.pet.dto.PetResponseDTO;
 import sesi.petvita.pet.mapper.PetMapper;
+import sesi.petvita.config.CloudinaryService; // NOVO: Importar CloudinaryService
 import sesi.petvita.user.dto.UserRequestDTO;
 import sesi.petvita.user.dto.UserResponseDTO;
 import sesi.petvita.user.dto.UserUpdateRequestDTO;
@@ -14,11 +15,11 @@ import sesi.petvita.user.model.UserModel;
 import sesi.petvita.user.repository.UserRepository;
 import sesi.petvita.user.role.UserRole;
 
+import java.io.IOException; // NOVO: Importar IOException
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
-// NOVO ARQUIVO
 @Service
 @RequiredArgsConstructor
 public class UserService {
@@ -27,6 +28,7 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
     private final UserMapper userMapper;
     private final PetMapper petMapper;
+    private final CloudinaryService cloudinaryService; // NOVO: Injetar o serviço
 
     public List<UserResponseDTO> searchByName(String name) {
         return userRepository.findByUsernameContainingIgnoreCase(name)
@@ -48,9 +50,6 @@ public class UserService {
     }
 
     public UserResponseDTO registerUser(UserRequestDTO requestDTO) {
-        // Você pode adicionar uma verificação aqui para ver se o email ou username já existe
-        // userRepository.findByEmail(requestDTO.email()).ifPresent(...);
-
         UserModel user = userMapper.toModel(requestDTO);
         user.setRole(UserRole.USER);
         user.setPassword(passwordEncoder.encode(requestDTO.password()));
@@ -63,11 +62,13 @@ public class UserService {
         UserModel existingUser = userRepository.findById(id)
                 .orElseThrow(() -> new NoSuchElementException("Usuário não encontrado com o ID: " + id));
 
-        existingUser.setUsername(requestDTO.username());
-        existingUser.setEmail(requestDTO.email());
-        existingUser.setPhone(requestDTO.phone());
-        existingUser.setAddress(requestDTO.address());
-        existingUser.setImageurl(requestDTO.imageurl());
+        if (requestDTO.username() != null) existingUser.setUsername(requestDTO.username());
+        if (requestDTO.email() != null) existingUser.setEmail(requestDTO.email());
+        if (requestDTO.phone() != null) existingUser.setPhone(requestDTO.phone());
+        if (requestDTO.address() != null) existingUser.setAddress(requestDTO.address());
+
+        // A imagem é atualizada por um endpoint separado, então não mexemos aqui.
+        // if (requestDTO.imageurl() != null) existingUser.setImageurl(requestDTO.imageurl());
 
         if (requestDTO.password() != null && !requestDTO.password().isEmpty()) {
             existingUser.setPassword(passwordEncoder.encode(requestDTO.password()));
@@ -78,10 +79,19 @@ public class UserService {
     }
 
     public void deleteUser(Long id) {
-        if (!userRepository.existsById(id)) {
-            throw new NoSuchElementException("Usuário não encontrado com o ID: " + id);
+        UserModel user = userRepository.findById(id)
+                .orElseThrow(() -> new NoSuchElementException("Usuário não encontrado com o ID: " + id));
+
+        // NOVO: Deletar imagem do Cloudinary antes de deletar o usuário do banco
+        if (user.getImagePublicId() != null && !user.getImagePublicId().isEmpty()) {
+            try {
+                cloudinaryService.delete(user.getImagePublicId());
+            } catch (IOException e) {
+                // Loga o erro mas não impede a exclusão do usuário do banco
+                System.err.println("Erro ao deletar imagem do usuário no Cloudinary: " + e.getMessage());
+            }
         }
-        userRepository.deleteById(id);
+        userRepository.delete(user);
     }
 
     public UserDetailsWithPetsDTO getUserWithPets(Long userId) {

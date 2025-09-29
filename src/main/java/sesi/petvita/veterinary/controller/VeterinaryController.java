@@ -49,6 +49,12 @@ public class VeterinaryController {
         return ResponseEntity.ok(veterinaryService.searchVeterinarians(name, speciality));
     }
 
+    @GetMapping("/me")
+    @Operation(summary = "[VET] Buscar dados do perfil profissional do veterinário logado")
+    public ResponseEntity<VeterinaryResponseDTO> getMyProfessionalProfile(@AuthenticationPrincipal UserModel user) {
+        return ResponseEntity.ok(veterinaryService.findVeterinaryByUserAccount(user));
+    }
+
     @GetMapping("/{id}")
     @Operation(summary = "[TODOS] Buscar veterinário por ID")
     public ResponseEntity<VeterinaryResponseDTO> getVeterinaryById(@PathVariable Long id) {

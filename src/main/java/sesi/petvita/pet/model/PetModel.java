@@ -58,6 +58,7 @@ public class PetModel {
     @NotBlank
     @Column(nullable = false)
     private String imageurl;
+    private String imagePublicId;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)

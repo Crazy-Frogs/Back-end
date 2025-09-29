@@ -61,11 +61,10 @@ public class VeterinaryModel {
     @JoinColumn(name = "user_account_id")
     private UserModel userAccount;
 
-
-
     @NotBlank
     @Column(nullable = false)
     private String imageurl;
+    private String imagePublicId;
 
     @OneToMany(mappedBy = "veterinario")
     private List<ConsultationModel> consultas;

@@ -154,6 +154,12 @@ public class VeterinaryService {
                 .orElseThrow(() -> new NoSuchElementException("Veterinário não encontrado com o ID: " + id));
     }
 
+    public VeterinaryResponseDTO findVeterinaryByUserAccount(UserModel user) {
+        return veterinaryRepository.findByUserAccount(user)
+                .map(veterinaryMapper::toDTO)
+                .orElseThrow(() -> new NoSuchElementException("Perfil de veterinário não encontrado para este usuário."));
+    }
+
     public List<VeterinaryResponseDTO> searchVeterinarians(String name, SpecialityEnum speciality) {
         List<VeterinaryModel> result;
         if (name != null && !name.isEmpty() && speciality != null) {
