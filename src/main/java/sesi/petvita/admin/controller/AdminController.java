@@ -6,13 +6,12 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import sesi.petvita.admin.dto.MonthlyReportDTO;
 import sesi.petvita.admin.dto.UserDetailsWithPetsDTO;
 import sesi.petvita.admin.service.AdminReportService;
 import sesi.petvita.consultation.dto.ConsultationResponseDTO;
 import sesi.petvita.consultation.dto.ConsultationUpdateRequestDTO;
 import sesi.petvita.consultation.service.ConsultationService;
-import sesi.petvita.notification.service.ChatService;
+import sesi.petvita.notification.service.AppointmentReminderService;
 import sesi.petvita.user.dto.UserResponseDTO;
 import sesi.petvita.user.dto.UserUpdateRequestDTO;
 import sesi.petvita.user.service.UserService;
@@ -34,7 +33,14 @@ public class AdminController {
     private final VeterinaryService veterinaryService;
     private final ConsultationService consultationService;
     private final AdminReportService adminReportService;
-    private final ChatService chatService;
+    private final AppointmentReminderService appointmentReminderService;
+
+    @GetMapping("/test-email")
+    @Operation(summary = "[ADMIN] Forçar a execução do envio de e-mails de lembrete")
+    public ResponseEntity<String> testEmailScheduler() {
+        appointmentReminderService.sendAppointmentReminders();
+        return ResponseEntity.ok("Tarefa de envio de e-mails de lembrete executada manualmente. Verifique o console do back-end.");
+    }
 
     @GetMapping("/users")
     @Operation(summary = "[ADMIN] Listar ou buscar usuários por nome")
@@ -97,12 +103,7 @@ public class AdminController {
         return ResponseEntity.ok(consultationService.updateConsultationByAdmin(id, dto));
     }
 
-    // Endpoint para o admin ver a lista de todas as conversas
-    @GetMapping("/chats/conversations")
-    @Operation(summary = "[ADMIN] Listar todas as conversas do sistema")
-    public ResponseEntity<List<ConsultationResponseDTO>> getAllConversations() {
-        return ResponseEntity.ok(chatService.getAllConversationsForAdmin());
-    }
+    // O MÉTODO GET /chats/conversations FOI REMOVIDO DAQUI
 
     @GetMapping("/reports/summary")
     @Operation(summary = "[ADMIN] Ver relatório customizado por período")

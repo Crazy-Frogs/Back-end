@@ -1,5 +1,6 @@
 package sesi.petvita.config;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -23,6 +24,7 @@ public class ImageUploadService {
     private final PetRepository petRepository;
     private final VeterinaryRepository veterinaryRepository;
 
+    @Transactional
     public String uploadForUser(Long userId, MultipartFile file) throws IOException {
         UserModel user = userRepository.findById(userId)
                 .orElseThrow(() -> new NoSuchElementException("Usuário não encontrado"));
@@ -43,6 +45,7 @@ public class ImageUploadService {
         return url;
     }
 
+    @Transactional
     public String uploadForPet(Long petId, MultipartFile file) throws IOException {
         PetModel pet = petRepository.findById(petId)
                 .orElseThrow(() -> new NoSuchElementException("Pet não encontrado"));
@@ -62,6 +65,7 @@ public class ImageUploadService {
         return url;
     }
 
+    @Transactional
     public String uploadForVeterinary(Long vetId, MultipartFile file) throws IOException {
         VeterinaryModel vet = veterinaryRepository.findById(vetId)
                 .orElseThrow(() -> new NoSuchElementException("Veterinário não encontrado"));

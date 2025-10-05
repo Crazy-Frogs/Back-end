@@ -1,49 +1,37 @@
 package sesi.petvita.notification.service;
 
+import com.google.cloud.firestore.Firestore;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import sesi.petvita.consultation.dto.ConsultationResponseDTO;
-import sesi.petvita.consultation.mapper.ConsultationMapper;
 import sesi.petvita.consultation.model.ConsultationModel;
 import sesi.petvita.consultation.repository.ConsultationRepository;
-import sesi.petvita.notification.model.ChatMessage;
-import sesi.petvita.notification.repository.ChatMessageRepository;
 import sesi.petvita.user.model.UserModel;
 import sesi.petvita.user.role.UserRole;
 
 import java.nio.file.AccessDeniedException;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.NoSuchElementException;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class ChatService {
 
-    private final ChatMessageRepository chatMessageRepository;
     private final ConsultationRepository consultationRepository;
     private final NotificationService notificationService;
-    private final ConsultationMapper consultationMapper;
+    private final Firestore firestore; // Injeção do client do Firestore
 
-    public List<ChatMessage> getMessages(Long consultationId, UserModel currentUser) throws AccessDeniedException {
+    // O método getMessages foi removido.
+
+    public void sendMessage(Long consultationId, String content, UserModel sender) throws AccessDeniedException {
         ConsultationModel consultation = findConsultationById(consultationId);
 
-        if (!isUserAuthorizedForChat(consultation, currentUser)) {
-            throw new AccessDeniedException("Você não tem permissão para ver este chat.");
-        }
-
-        return chatMessageRepository.findByConsultationIdOrderBySentAtAsc(consultationId);
-    }
-
-    @Transactional
-    public ChatMessage sendMessage(Long consultationId, String content, UserModel sender) throws AccessDeniedException {
-        ConsultationModel consultation = findConsultationById(consultationId);
-
+        // A lógica de permissão continua a mesma
         if (!isUserAuthorizedForChat(consultation, sender)) {
             throw new AccessDeniedException("Você não tem permissão para enviar mensagens neste chat.");
         }
 
+        // Determina quem é o destinatário
         UserModel receiver;
         UserModel consultationUser = consultation.getUsuario();
         UserModel vetUserAccount = consultation.getVeterinario().getUserAccount();
@@ -58,27 +46,22 @@ public class ChatService {
             receiver = consultationUser;
         }
 
-        ChatMessage chatMessage = ChatMessage.builder()
-                .consultation(consultation)
-                .sender(sender)
-                .receiver(receiver)
-                .content(content)
-                .build();
+        // Cria um objeto (Map) para ser salvo no Firestore
+        Map<String, Object> messageData = new HashMap<>();
+        messageData.put("senderId", sender.getId());
+        messageData.put("senderName", sender.getUsername()); // Útil para debug no Firebase
+        messageData.put("content", content);
+        messageData.put("timestamp", com.google.cloud.Timestamp.now()); // Timestamp do servidor
 
-        ChatMessage savedMessage = chatMessageRepository.save(chatMessage);
+        // Salva a mensagem na coleção do Firestore
+        // Estrutura: /consultas/{idDaConsulta}/mensagens/{idDaMensagem}
+        firestore.collection("consultas")
+                .document(consultationId.toString())
+                .collection("mensagens")
+                .add(messageData);
 
+        // A notificação interna para o ícone no header continua funcionando
         notificationService.createNotification(receiver, "Você tem uma nova mensagem de " + sender.getUsername() + ".");
-
-        return savedMessage;
-    }
-
-    // Método para buscar todas as conversas para o admin
-    public List<ConsultationResponseDTO> getAllConversationsForAdmin() {
-        return consultationRepository.findAll().stream()
-                // Filtra apenas consultas que já têm mensagens de chat
-                .filter(c -> c.getChatMessages() != null && !c.getChatMessages().isEmpty())
-                .map(consultationMapper::toDTO)
-                .collect(Collectors.toList());
     }
 
     private ConsultationModel findConsultationById(Long consultationId) {
@@ -86,9 +69,18 @@ public class ChatService {
                 .orElseThrow(() -> new NoSuchElementException("Consulta não encontrada com o ID: " + consultationId));
     }
 
-    // Método modificado para dar permissão ao ADMIN
     private boolean isUserAuthorizedForChat(ConsultationModel consultation, UserModel user) {
-        // Se o usuário for ADMIN, ele sempre tem permissão.
+        // Bloco de debug mantido para ajudar a diagnosticar problemas de permissão
+        System.out.println("\n--- Verificando permissão do chat para consulta ID: " + consultation.getId() + " ---");
+        System.out.println("ID do Usuário Logado (quem está agindo): " + user.getId());
+        System.out.println("Role do Usuário Logado: " + user.getRole());
+        System.out.println("ID do Paciente (dono da consulta): " + consultation.getUsuario().getId());
+        System.out.println("ID do Veterinário (da conta de usuário): " + (consultation.getVeterinario().getUserAccount() != null ? consultation.getVeterinario().getUserAccount().getId() : "N/A"));
+        boolean isOwner = user.getId().equals(consultation.getUsuario().getId());
+        boolean isVet = consultation.getVeterinario().getUserAccount() != null && user.getId().equals(consultation.getVeterinario().getUserAccount().getId());
+        System.out.println("Resultado da verificação: O usuário é o dono? " + isOwner + ". É o veterinário? " + isVet);
+        System.out.println("-----------------------------------------------------\n");
+
         if (user.getRole() == UserRole.ADMIN) {
             return true;
         }

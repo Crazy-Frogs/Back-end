@@ -36,40 +36,51 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                .cors(cors -> cors.configurationSource(corsConfigurationSource())) // Aplica a configuração de CORS
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(authorize -> authorize
-                        // Permite requisições OPTIONS para o pre-flight do CORS
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
 
-                        // Endpoints Públicos
-                        .requestMatchers("/auth/**", "/users/register", "/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
+                        // CORREÇÃO: Rotas públicas claramente definidas
+                        .requestMatchers(
+                                "/auth/login",          // Permitir o login
+                                "/users/register",      // Permitir o registro de usuários
+                                "/v3/api-docs/**",
+                                "/swagger-ui/**",
+                                "/swagger-ui.html"
+                        ).permitAll()
 
                         // Endpoints de Usuário (USER)
                         .requestMatchers(HttpMethod.POST, "/consultas").hasRole("USER")
                         .requestMatchers(HttpMethod.POST, "/veterinary/{id}/rate").hasRole("USER")
                         .requestMatchers("/pets/**").hasRole("USER")
-                        .requestMatchers("/chat/**").hasRole("USER")
-                        .requestMatchers("/notifications/**").hasRole("USER")
                         .requestMatchers(HttpMethod.POST, "/consultas/{id}/cancel").hasRole("USER")
                         .requestMatchers(HttpMethod.PUT, "/consultas/{id}").hasRole("USER")
 
+                        // Rotas para todos os autenticados
+                        .requestMatchers("/chat/**").hasAnyRole("USER", "ADMIN", "VETERINARY")
+                        .requestMatchers("/notifications/**").hasAnyRole("USER", "ADMIN", "VETERINARY")
+                        .requestMatchers(HttpMethod.PUT, "/users/me").authenticated()
+
                         // Endpoints de Veterinário (VETERINARY)
-                        .requestMatchers("/consultas/{id}/accept", "/consultas/{id}/reject", "/consultas/{id}/cancel", "/consultas/{id}/finalize").hasRole("VETERINARY")
+                        .requestMatchers("/consultas/{id}/accept", "/consultas/{id}/reject", "/consultas/{id}/finalize").hasRole("VETERINARY")
                         .requestMatchers(HttpMethod.PUT, "/consultas/{id}/report").hasRole("VETERINARY")
                         .requestMatchers(HttpMethod.GET, "/veterinary/me/monthly-report").hasRole("VETERINARY")
-                        .requestMatchers(HttpMethod.GET, "/consultas/vet/my-consultations").hasRole("VETERINARY")
                         .requestMatchers(HttpMethod.GET, "/veterinary/me").hasRole("VETERINARY")
+                        .requestMatchers(HttpMethod.GET, "/consultas/vet/my-consultations").hasRole("VETERINARY")
 
                         // Endpoints de Admin (ADMIN)
                         .requestMatchers("/admin/**").hasRole("ADMIN")
+                        .requestMatchers("/reports/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.POST, "/veterinary").hasRole("ADMIN") // Cadastro de vet é só para admin
+                        .requestMatchers(HttpMethod.POST, "/upload/**").hasAnyRole("USER", "ADMIN", "VETERINARY") // Upload de imagem para qualquer um logado
 
-                        // Endpoints Autenticados (Qualquer um logado pode ver)
+                        // Endpoints de Leitura (Qualquer um logado pode ver)
                         .requestMatchers(HttpMethod.GET, "/veterinary/**").authenticated()
                         .requestMatchers(HttpMethod.GET, "/consultas/**").authenticated()
                         .requestMatchers(HttpMethod.GET, "/users/me").authenticated()
 
-                        // Regra Final
+                        // Regra Final: Qualquer outra requisição precisa de autenticação
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
@@ -82,7 +93,6 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        // ADICIONE A URL DO SEU FRONT-END AQUI
         configuration.setAllowedOrigins(List.of(
                 "http://localhost:3000",
                 "https://vet-clinic-api-front.vercel.app",

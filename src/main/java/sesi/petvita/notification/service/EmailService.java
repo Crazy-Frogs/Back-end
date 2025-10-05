@@ -1,42 +1,50 @@
 package sesi.petvita.notification.service;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import jakarta.mail.MessagingException;
+import jakarta.mail.internet.MimeMessage;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.mail.MailException;
-import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+import org.thymeleaf.TemplateEngine;
+import org.thymeleaf.context.Context;
+
+import java.util.Map;
 
 @Service
+@RequiredArgsConstructor
 public class EmailService {
 
-    @Autowired
-    private JavaMailSender mailSender;
+    private final JavaMailSender mailSender;
+    private final TemplateEngine templateEngine;
 
-    // Pega o e-mail remetente do application.properties
     @Value("${spring.mail.username}")
     private String fromEmail;
 
-    /**
-     * Envia um e-mail de forma assíncrona.
-     * A anotação @Async faz com que este método rode em uma thread separada,
-     * não bloqueando a execução principal da aplicação.
-     */
     @Async
-    public void sendEmail(String to, String subject, String body) {
+    public void sendHtmlEmailFromTemplate(String to, String subject, Map<String, Object> templateModel) {
         try {
-            SimpleMailMessage message = new SimpleMailMessage();
-            message.setFrom(fromEmail);
-            message.setTo(to);
-            message.setSubject(subject);
-            message.setText(body);
+            Context context = new Context();
+            context.setVariables(templateModel);
 
-            mailSender.send(message);
-            System.out.println("E-mail de lembrete enviado com sucesso para: " + to);
-        } catch (MailException e) {
-            // Em um projeto real, você usaria um logger (SLF4J)
-            System.err.println("Erro ao enviar e-mail para " + to + ": " + e.getMessage());
+            String htmlBody = templateEngine.process("email-template.html", context);
+
+            MimeMessage mimeMessage = mailSender.createMimeMessage();
+
+            // CORREÇÃO AQUI: A ordem dos parâmetros foi ajustada para (MimeMessage, multipart, encoding)
+            MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true, "UTF-8");
+
+            helper.setFrom(fromEmail);
+            helper.setTo(to);
+            helper.setSubject(subject);
+            helper.setText(htmlBody, true);
+
+            mailSender.send(mimeMessage);
+            System.out.println("E-mail com template HTML enviado com sucesso para: " + to);
+        } catch (MessagingException e) {
+            System.err.println("Erro ao enviar e-mail com template para " + to + ": " + e.getMessage());
         }
     }
 }
