@@ -7,6 +7,7 @@ import sesi.petvita.admin.dto.UserDetailsWithPetsDTO;
 import sesi.petvita.pet.dto.PetResponseDTO;
 import sesi.petvita.pet.mapper.PetMapper;
 import sesi.petvita.config.CloudinaryService; // NOVO: Importar CloudinaryService
+import sesi.petvita.user.dto.UserProfileUpdateDTO;
 import sesi.petvita.user.dto.UserRequestDTO;
 import sesi.petvita.user.dto.UserResponseDTO;
 import sesi.petvita.user.dto.UserUpdateRequestDTO;
@@ -29,6 +30,19 @@ public class UserService {
     private final UserMapper userMapper;
     private final PetMapper petMapper;
     private final CloudinaryService cloudinaryService; // NOVO: Injetar o serviço
+
+    public UserResponseDTO updateUserProfile(Long userId, UserProfileUpdateDTO dto) {
+        UserModel existingUser = userRepository.findById(userId)
+                .orElseThrow(() -> new NoSuchElementException("Usuário não encontrado com o ID: " + userId));
+
+        if (dto.username() != null) existingUser.setUsername(dto.username());
+        if (dto.email() != null) existingUser.setEmail(dto.email());
+        if (dto.phone() != null) existingUser.setPhone(dto.phone());
+        if (dto.address() != null) existingUser.setAddress(dto.address());
+
+        UserModel savedUser = userRepository.save(existingUser);
+        return userMapper.toDTO(savedUser);
+    }
 
     public List<UserResponseDTO> searchByName(String name) {
         return userRepository.findByUsernameContainingIgnoreCase(name)

@@ -4,13 +4,12 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import sesi.petvita.user.dto.UserRequestDTO;
 import sesi.petvita.user.dto.UserResponseDTO;
+import sesi.petvita.user.dto.UserProfileUpdateDTO; // Assegure-se de que este é o import correto
 import sesi.petvita.user.mapper.UserMapper;
 import sesi.petvita.user.model.UserModel;
 import sesi.petvita.user.service.UserService;
@@ -22,23 +21,29 @@ import sesi.petvita.user.service.UserService;
 public class UserController {
 
     private final UserService userService;
-    private final UserMapper userMapper; // Injetar o mapper
+    private final UserMapper userMapper;
 
     @PostMapping("/register")
     @Operation(summary = "Registrar um novo usuário")
     public ResponseEntity<UserResponseDTO> registerUser(@Valid @RequestBody UserRequestDTO requestDTO) {
         UserResponseDTO registeredUser = userService.registerUser(requestDTO);
-        return ResponseEntity.status(HttpStatus.CREATED).body(registeredUser);
+        return ResponseEntity.status(201).body(registeredUser);
     }
 
     @GetMapping("/me")
     @Operation(summary = "Verificar dados do usuário logado")
     public ResponseEntity<UserResponseDTO> getCurrentUser(@AuthenticationPrincipal UserModel user) {
-        // 1. O 'user' injetado já é a entidade UserModel completa.
-        // 2. Usamos o mapper para converter a entidade para o DTO seguro.
         UserResponseDTO userResponse = userMapper.toDTO(user);
-
-        // 3. Retornamos o DTO, que não tem listas com lazy loading.
         return ResponseEntity.ok(userResponse);
+    }
+
+    // CORREÇÃO: Garante que existe apenas UM método para PUT /users/me
+    @PutMapping("/me")
+    @Operation(summary = "Atualizar dados do próprio perfil")
+    public ResponseEntity<UserResponseDTO> updateMyProfile(
+            @AuthenticationPrincipal UserModel authenticatedUser,
+            @RequestBody @Valid UserProfileUpdateDTO dto) { // Usa o DTO específico de perfil
+
+        return ResponseEntity.ok(userService.updateUserProfile(authenticatedUser.getId(), dto));
     }
 }

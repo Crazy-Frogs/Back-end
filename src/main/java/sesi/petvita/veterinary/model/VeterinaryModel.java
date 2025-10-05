@@ -57,7 +57,7 @@ public class VeterinaryModel {
     @Column(unique = true, nullable = false)
     private String phone;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "user_account_id")
     private UserModel userAccount;
 
