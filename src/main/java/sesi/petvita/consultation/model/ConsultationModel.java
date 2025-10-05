@@ -31,7 +31,6 @@ public class ConsultationModel {
         @GeneratedValue(strategy = GenerationType.IDENTITY)
         private Long id;
 
-
         @JsonFormat(pattern = "yyyy-MM-dd")
         @Column(nullable = false)
         private LocalDate consultationdate;
@@ -68,8 +67,10 @@ public class ConsultationModel {
         @Column(columnDefinition = "TEXT")
         private String doctorReport;
 
-        @OneToMany(mappedBy = "consultation", cascade = CascadeType.ALL, orphanRemoval = true)
+        // ===== ALTERAÇÃO AQUI: Adicione fetch = FetchType.EAGER =====
+        @OneToMany(mappedBy = "consultation", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
         private List<ChatMessage> chatMessages;
+        // ==========================================================
 
         private LocalDateTime dataCriacao;
         private LocalDateTime dataAtualizacao;
@@ -80,14 +81,11 @@ public class ConsultationModel {
 
         @PrePersist
         public void prePersist() {
-            this.dataCriacao = LocalDateTime.now();
+                this.dataCriacao = LocalDateTime.now();
         }
 
         @PreUpdate
         public void preUpdate() {
-            this.dataAtualizacao = LocalDateTime.now();
+                this.dataAtualizacao = LocalDateTime.now();
         }
-
-
-    }
-
+}
