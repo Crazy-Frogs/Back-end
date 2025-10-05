@@ -28,6 +28,8 @@ public class Notification {
 
     private LocalDateTime createdAt;
 
+    private Long consultationId;
+
     @PrePersist
     protected void onCreate() {
         createdAt = LocalDateTime.now();
