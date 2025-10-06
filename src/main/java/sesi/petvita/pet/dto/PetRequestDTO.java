@@ -24,10 +24,10 @@ public record PetRequestDTO(
         @NotNull
         String imageurl,
 
-        @Size(min = 3, max = 50)
+
         String personalizatedSpecies,
 
-        @Size(min = 3, max = 50)
+
         String personalizedBreed,
 
         @NotNull

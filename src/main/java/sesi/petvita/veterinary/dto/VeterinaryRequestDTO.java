@@ -1,6 +1,5 @@
 package sesi.petvita.veterinary.dto;
 
-
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
@@ -11,7 +10,11 @@ public record VeterinaryRequestDTO(
         @NotBlank @Size(min = 3, max = 50)
         String name,
 
+
+        @NotBlank(message = "A senha é obrigatória.")
+        @Size(min = 8, message = "A senha deve ter no mínimo 8 caracteres.")
         String password,
+
 
         @Email @NotBlank @Size(max = 100)
         String email,
@@ -20,12 +23,14 @@ public record VeterinaryRequestDTO(
         @Pattern(regexp = "^[A-Za-z]{2}\\s?\\d+$", message = "Formato de CRMV inválido")
         String crmv,
 
-        @NotBlank @Pattern(regexp = "^\\d{7,9}X?$", message = "Formato de RG inválido")
+        @NotBlank
+        @Size(min = 7, max = 14, message = "O RG deve ter entre 7 e 14 caracteres.")
         String rg,
 
         SpecialityEnum specialityenum,
 
-        @NotBlank @Pattern(regexp = "^\\d{2}\\d{8,9}$")
+        @NotBlank
+        @Size(min = 10, max = 15, message = "O telefone deve ter entre 10 e 15 caracteres.")
         String phone,
 
         @NotBlank

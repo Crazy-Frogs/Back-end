@@ -2,7 +2,6 @@ package sesi.petvita.user.dto;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 
 public record UserRequestDTO(
@@ -10,19 +9,19 @@ public record UserRequestDTO(
         String username,
 
         @NotBlank
-        @Pattern(regexp = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=!])(?=\\S+$).+$", message = "A senha deve ser forte.")
+        @Size(min = 6, message = "A senha deve ter no mínimo 6 caracteres.")
         String password,
 
         @Email @NotBlank @Size(max = 100)
         String email,
 
-        @NotBlank @Pattern(regexp = "^\\d{2}\\d{8,9}$")
+        @NotBlank
         String phone,
 
         @NotBlank @Size(max = 200)
         String address,
 
-        @NotBlank @Pattern(regexp = "^\\d{7,9}X?$", message = "Formato de RG inválido")
+        @NotBlank
         String rg,
 
         @NotBlank

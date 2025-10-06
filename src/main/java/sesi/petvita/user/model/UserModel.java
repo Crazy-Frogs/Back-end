@@ -1,7 +1,5 @@
 package sesi.petvita.user.model;
 
-
-import com.fasterxml.jackson.annotation.JsonIgnore; // Importe esta anotação!
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
@@ -13,10 +11,8 @@ import sesi.petvita.consultation.model.ConsultationModel;
 import sesi.petvita.pet.model.PetModel;
 import sesi.petvita.user.role.UserRole;
 
-
 import java.util.Collection;
 import java.util.List;
-import java.util.UUID;
 
 @Getter
 @Setter
@@ -37,7 +33,7 @@ public class UserModel implements UserDetails {
     private String username;
 
     @NotBlank
-    @Pattern(regexp = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=!])(?=\\S+$).+$", message = "A senha deve conter pelo menos um número, uma letra maiúscula, uma letra minúscula e um caractere especial.")
+    @Size(min = 8, message = "A senha deve ter no mínimo 8 caracteres.")
     @Column(nullable = false)
     private String password;
 
@@ -48,7 +44,6 @@ public class UserModel implements UserDetails {
     private String email;
 
     @NotBlank
-    @Pattern(regexp = "^\\d{2}\\d{8,9}$", message = "Formato de telefone inválido (ex: 11987654321)")
     @Column(unique = true , nullable = false)
     private String phone;
 
@@ -58,13 +53,13 @@ public class UserModel implements UserDetails {
     private String address;
 
     @NotBlank
-    @Pattern(regexp = "^\\d{7,9}X?$", message = "Formato de RG inválido")
     @Column(unique = true , nullable = false)
     private String rg;
 
     @NotBlank
     @Column(nullable = false)
     private String imageurl;
+
     private String imagePublicId;
 
     @Column(nullable = false)
@@ -79,6 +74,15 @@ public class UserModel implements UserDetails {
     @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<PetModel> pets;
 
+    // ===== ALTERAÇÃO AQUI: NOVO MÉTODO ADICIONADO =====
+    /**
+     * Retorna o nome de usuário (display name), não o email.
+     * @return O nome de usuário.
+     */
+    public String getActualUsername() {
+        return this.username;
+    }
+    // ===============================================
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -87,26 +91,19 @@ public class UserModel implements UserDetails {
 
     @Override
     public String getUsername() {
-        return email;
+        // Este método é usado pelo Spring Security e DEVE retornar o email para o login
+        return this.email;
     }
 
     @Override
-    public boolean isAccountNonExpired() {
-        return true;
-    }
+    public boolean isAccountNonExpired() { return true; }
 
     @Override
-    public boolean isAccountNonLocked() {
-        return true;
-    }
+    public boolean isAccountNonLocked() { return true; }
 
     @Override
-    public boolean isCredentialsNonExpired() {
-        return true;
-    }
+    public boolean isCredentialsNonExpired() { return true; }
 
     @Override
-    public boolean isEnabled() {
-        return true;
-    }
+    public boolean isEnabled() { return true; }
 }
