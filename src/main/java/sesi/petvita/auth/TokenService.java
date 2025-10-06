@@ -38,7 +38,10 @@ public class TokenService {
         Map<String, Object> claims = new HashMap<>();
         claims.put("role", userDetails.getRole().name());
         claims.put("userId", userDetails.getId());
-        claims.put("username", userDetails.getUsername());
+
+        // ===== ALTERAÇÃO AQUI: Usa o novo método para pegar o nome real =====
+        claims.put("username", userDetails.getActualUsername());
+        // =================================================================
 
         return buildToken(claims, userDetails, jwtExpiration);
     }
@@ -46,7 +49,7 @@ public class TokenService {
     private String buildToken(Map<String, Object> extraClaims, UserDetails userDetails, long expiration) {
         return Jwts.builder()
                 .setClaims(extraClaims)
-                .setSubject(userDetails.getUsername()) // No nosso caso, o email
+                .setSubject(userDetails.getUsername()) // Continua sendo o email para o 'subject'
                 .setIssuedAt(new Date(System.currentTimeMillis()))
                 .setExpiration(new Date(System.currentTimeMillis() + expiration))
                 .signWith(getSignInKey(), SignatureAlgorithm.HS256)

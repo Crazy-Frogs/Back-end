@@ -16,14 +16,17 @@ public class NotificationService {
     private final NotificationRepository notificationRepository;
 
     @Transactional
-    public void createNotification(UserModel user, String message) {
+    // ===== ESTA É A DEFINIÇÃO CORRETA DO MÉTODO COM 3 ARGUMENTOS =====
+    public void createNotification(UserModel user, String message, Long consultationId) {
         Notification notification = Notification.builder()
                 .user(user)
                 .message(message)
                 .isRead(false)
+                .consultationId(consultationId) // Salva o ID da consulta
                 .build();
         notificationRepository.save(notification);
     }
+    // =================================================================
 
     public List<Notification> getNotificationsForUser(UserModel user) {
         return notificationRepository.findByUserOrderByCreatedAtDesc(user);

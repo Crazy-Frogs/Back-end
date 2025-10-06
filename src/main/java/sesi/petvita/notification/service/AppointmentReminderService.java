@@ -20,7 +20,7 @@ public class AppointmentReminderService {
     private final NotificationService notificationService;
     private final EmailService emailService;
 
-    @Scheduled(cron = "0 0 8 * * *")
+    @Scheduled(cron = "0 * * * * *")
     public void sendAppointmentReminders() {
         LocalDate tomorrow = LocalDate.now().plusDays(1);
         List<ConsultationModel> upcomingConsultations = consultationRepository

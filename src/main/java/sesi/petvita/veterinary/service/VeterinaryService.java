@@ -200,11 +200,8 @@ public class VeterinaryService {
                 LocalTime.of(14, 0), LocalTime.of(15, 0), LocalTime.of(16, 0), LocalTime.of(17, 0)
         );
 
-        List<LocalTime> bookedSlots = consultationRepository.findByVeterinarioId(vetId).stream()
-                .filter(c -> c.getConsultationdate().equals(date) &&
-                        (c.getStatus() == ConsultationStatus.AGENDADA || c.getStatus() == ConsultationStatus.PENDENTE))
-                .map(ConsultationModel::getConsultationtime)
-                .collect(Collectors.toList());
+        // Busca apenas os horários já agendados diretamente do banco, em vez de todos os objetos de consulta
+        List<LocalTime> bookedSlots = consultationRepository.findBookedTimesByVeterinarianAndDate(vetId, date);
 
         return allDaySlots.stream()
                 .filter(slot -> !bookedSlots.contains(slot))
