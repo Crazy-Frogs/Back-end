@@ -1,0 +1,12 @@
+/src/main/resources/application.properties
+/src/main/resources/firebase-service-account.json
+
+# Arquivos compilados (Java)
+/target/
+*.jar
+*.war
+
+# Arquivos de IDE
+.idea/
+.vscode/
+*.iml
